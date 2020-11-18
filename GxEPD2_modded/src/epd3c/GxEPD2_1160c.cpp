@@ -14,7 +14,7 @@
 #include "GxEPD2_1160c.h"
 
 GxEPD2_1160c::GxEPD2_1160c(int8_t cs, int8_t dc, int8_t rst, int8_t busy) :
-  GxEPD2_EPD(cs, dc, rst, busy, HIGH, 25000000, WIDTH, HEIGHT, panel, hasColor, hasPartialUpdate, hasFastPartialUpdate)
+  GxEPD2_EPD(cs, dc, rst, busy, HIGH, 40000000, WIDTH, HEIGHT, panel, hasColor, hasPartialUpdate, hasFastPartialUpdate)
 {
 }
 
