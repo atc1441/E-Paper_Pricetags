@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PROJECT>
+    <PROJECT_TOOL_CONFIG NAME="FRONTEND">
+        <TOOL_CONFIG CONFIG_NAME="NO_LONGER_USED">
+            <ICON LOCATION="view_detailed.png" />
+            <TOOL TOOL_NAME="Ghidra: ok" INSTANCE_NAME="">
+                <OPTIONS />
+                <PACKAGE NAME="Ghidra Core" />
+                <PLUGIN_STATE CLASS="ghidra.plugin.importer.ImporterPlugin">
+                    <ARRAY NAME="library search paths" TYPE="string">
+                        <A VALUE="." />
+                        <A VALUE="C:\Windows\SysWOW64" />
+                        <A VALUE="C:\Program Files\Amazon Corretto\jdk11.0.4_10\bin" />
+                        <A VALUE="C:\Windows\Sun\Java\bin" />
+                        <A VALUE="C:\Windows\system32" />
+                        <A VALUE="C:\Windows" />
+                        <A VALUE="C:\Program Files (x86)\Embarcadero\Studio\18.0\bin" />
+                        <A VALUE="C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl" />
+                        <A VALUE="C:\Program Files (x86)\Embarcadero\Studio\18.0\bin64" />
+                        <A VALUE="C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl\Win64" />
+                        <A VALUE="C:\ProgramData\Oracle\Java\javapath" />
+                        <A VALUE="C:\Program Files (x86)\Embarcadero\Studio\19.0\bin" />
+                        <A VALUE="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl" />
+                        <A VALUE="C:\Program Files (x86)\Embarcadero\Studio\19.0\bin64" />
+                        <A VALUE="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\Win64" />
+                        <A VALUE="C:\Python27\" />
+                        <A VALUE="C:\Python27\Scripts" />
+                        <A VALUE="C:\WinAVR-20100110\bin" />
+                        <A VALUE="C:\WinAVR-20100110\utils\bin" />
+                        <A VALUE="C:\Program Files (x86)\Intel\iCLS Client\" />
+                        <A VALUE="C:\Program Files\Intel\iCLS Client\" />
+                        <A VALUE="C:\Users\atc14\AppData\Local\Programs\Python\Python38-32" />
+                        <A VALUE="C:\Users\atc14\AppData\Local\Programs\Python\Python38-32\Scripts" />
+                        <A VALUE="C:\Windows\System32\Wbem" />
+                        <A VALUE="C:\Windows\System32\WindowsPowerShell\v1.0\" />
+                        <A VALUE="C:\Windows\System32\OpenSSH\" />
+                        <A VALUE="C:\Program Files (x86)\STMicroelectronics\STM32 ST-LINK Utility\ST-LINK Utility" />
+                        <A VALUE="C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL" />
+                        <A VALUE="C:\Program Files\Intel\Intel(R) Management Engine Components\DAL" />
+                        <A VALUE="C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT" />
+                        <A VALUE="C:\Program Files\Intel\Intel(R) Management Engine Components\IPT" />
+                        <A VALUE="C:\Program Files (x86)\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0" />
+                        <A VALUE="C:\Program Files (x86)\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin" />
+                        <A VALUE="C:\Program Files\Git\cmd" />
+                        <A VALUE="C:\Program Files\PuTTY\" />
+                        <A VALUE="C:\openocd" />
+                        <A VALUE="C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\" />
+                        <A VALUE="C:\Program Files (x86)\Nordic Semiconductor\nrf-command-line-tools\bin\" />
+                        <A VALUE="C:\Program Files (x86)\GNU Tools Arm Embedded\9 2019-q4-major\bin" />
+                        <A VALUE="C:\Users\atc14\AppData\Local\Programs\Python\Python38-32\Scripts\" />
+                        <A VALUE="C:\Users\atc14\AppData\Local\Programs\Python\Python38-32\" />
+                        <A VALUE="C:\Program Files (x86)\GNU Tools ARM Embedded\4.9 2015q3\bin" />
+                        <A VALUE="C:\Program Files (x86)\GNU Tools ARM Embedded\8 2019-q3-update\bin" />
+                        <A VALUE="C:\Users\atc14\AppData\Local\Microsoft\WindowsApps" />
+                        <A VALUE="C:\Users\atc14\AppData\Local\Programs\Microsoft VS Code\bin" />
+                        <A VALUE="C:\Program Files (x86)\Nmap" />
+                    </ARRAY>
+                </PLUGIN_STATE>
+                <ROOT_NODE X_POS="445" Y_POS="79" WIDTH="1482" HEIGHT="918" EX_STATE="0" FOCUSED_OWNER="FrontEnd Tool" FOCUSED_NAME="FrontEnd" FOCUSED_TITLE="Project Window">
+                    <COMPONENT_NODE TOP_INFO="0">
+                        <COMPONENT_INFO NAME="FrontEnd" OWNER="FrontEnd Tool" TITLE="Project Window" ACTIVE="true" GROUP="Default" INSTANCE_ID="3368203581268486903" />
+                    </COMPONENT_NODE>
+                    <WINDOW_NODE X_POS="1059" Y_POS="910" WIDTH="416" HEIGHT="436">
+                        <COMPONENT_NODE TOP_INFO="0">
+                            <COMPONENT_INFO NAME="Filesystem Viewer" OWNER="FileSystemBrowserPlugin" TITLE="liblt_8258.a" ACTIVE="false" GROUP="Default" INSTANCE_ID="3353151517937405240" />
+                        </COMPONENT_NODE>
+                    </WINDOW_NODE>
+                </ROOT_NODE>
+                <PREFERENCES>
+                    <PREFERENCE_STATE NAME="docking.widgets.filechooser.DirectoryTableModel:Filename:Size:Modified:">
+                        <XML NAME="COLUMN_DATA">
+                            <Table_State>
+                                <COLUMN NAME="Filename" WIDTH="233" VISIBLE="true" />
+                                <COLUMN NAME="Size" WIDTH="233" VISIBLE="true" />
+                                <COLUMN NAME="Modified" WIDTH="232" VISIBLE="true" />
+                                <TABLE_SORT_STATE>
+                                    <COLUMN_SORT_STATE COLUMN_MODEL_INDEX="0" SORT_DIRECTION="ascending" SORT_ORDER="1" />
+                                </TABLE_SORT_STATE>
+                            </Table_State>
+                        </XML>
+                    </PREFERENCE_STATE>
+                    <PREFERENCE_STATE NAME="ghidra.plugin.importer.LanguageSortedTableModel:Processor:Variant:Size:Endian:Compiler:">
+                        <XML NAME="COLUMN_DATA">
+                            <Table_State>
+                                <COLUMN NAME="Processor" WIDTH="90" VISIBLE="true" />
+                                <COLUMN NAME="Variant" WIDTH="90" VISIBLE="true" />
+                                <COLUMN NAME="Size" WIDTH="90" VISIBLE="true" />
+                                <COLUMN NAME="Endian" WIDTH="90" VISIBLE="true" />
+                                <COLUMN NAME="Compiler" WIDTH="90" VISIBLE="true" />
+                                <TABLE_SORT_STATE>
+                                    <COLUMN_SORT_STATE COLUMN_MODEL_INDEX="0" SORT_DIRECTION="ascending" SORT_ORDER="1" />
+                                </TABLE_SORT_STATE>
+                            </Table_State>
+                        </XML>
+                    </PREFERENCE_STATE>
+                    <PREFERENCE_STATE NAME="ghidra.framework.main.datatable.ProjectDataTableModel:Type:Name:Path:Modified:Processor:Endian:Address Size:Compiler:Size:Format:">
+                        <XML NAME="COLUMN_DATA">
+                            <Table_State>
+                                <COLUMN NAME="ghidra.framework.main.datatable.ProjectDataTableModel$DomainFileTypeColumn.Type" WIDTH="125" VISIBLE="true" />
+                                <COLUMN NAME="ghidra.framework.main.datatable.ProjectDataTableModel$DomainFileNameColumn.Name" WIDTH="160" VISIBLE="true" />
+                                <COLUMN NAME="ghidra.framework.main.datatable.ProjectDataTableModel$DomainFilePathColumn.Path" WIDTH="159" VISIBLE="true" />
+                                <COLUMN NAME="ghidra.framework.main.datatable.ProjectDataTableModel$ModificationDateColumn.Modified" WIDTH="160" VISIBLE="true" />
+                                <COLUMN NAME="ghidra.util.table.projectdata.column.ProcessorProjectDataColumn.Processor" WIDTH="140" VISIBLE="true" />
+                                <COLUMN NAME="ghidra.util.table.projectdata.column.EndianProjectDataColumn.Endian" WIDTH="139" VISIBLE="true" />
+                                <COLUMN NAME="ghidra.util.table.projectdata.column.AddressSizeProjectDataColumn.Address Size" WIDTH="132" VISIBLE="true" />
+                                <COLUMN NAME="ghidra.util.table.projectdata.column.CompilerProjectDataColumn.Compiler" WIDTH="139" VISIBLE="true" />
+                                <COLUMN NAME="ghidra.util.table.projectdata.column.DomainFileSizeProjectDataColumn.Size" WIDTH="144" VISIBLE="true" />
+                                <COLUMN NAME="ghidra.util.table.projectdata.column.FormatProjectDataColumn.Format" WIDTH="143" VISIBLE="true" />
+                                <COLUMN NAME="ghidra.util.table.projectdata.column.CreationDateProjectDataColumn.Created" WIDTH="200" VISIBLE="false" />
+                                <COLUMN NAME="ghidra.util.table.projectdata.column.ExecutablePathProjectDataColumn.Executable Path" WIDTH="60" VISIBLE="false" />
+                                <COLUMN NAME="ghidra.util.table.projectdata.column.LanguageProjectDataColumn.Language ID" WIDTH="60" VISIBLE="false" />
+                                <COLUMN NAME="ghidra.util.table.projectdata.column.CreatedWithProjectDataColumn.Created With" WIDTH="100" VISIBLE="false" />
+                                <COLUMN NAME="ghidra.util.table.projectdata.column.Md5ProjectDataColumn.MD5" WIDTH="120" VISIBLE="false" />
+                                <TABLE_SORT_STATE>
+                                    <COLUMN_SORT_STATE COLUMN_MODEL_INDEX="0" SORT_DIRECTION="ascending" SORT_ORDER="1" />
+                                </TABLE_SORT_STATE>
+                            </Table_State>
+                        </XML>
+                    </PREFERENCE_STATE>
+                </PREFERENCES>
+            </TOOL>
+        </TOOL_CONFIG>
+    </PROJECT_TOOL_CONFIG>
+    <PROJECT_DATA_XML_NAME NAME="DISPLAY_DATA">
+        <SAVE_STATE>
+            <ARRAY NAME="EXPANDED_PATHS" TYPE="string">
+                <A VALUE="ok:" />
+            </ARRAY>
+            <STATE NAME="SHOW_TABLE" TYPE="boolean" VALUE="false" />
+        </SAVE_STATE>
+    </PROJECT_DATA_XML_NAME>
+    <TOOL_MANAGER ACTIVE_WORKSPACE="Workspace">
+        <WORKSPACE NAME="Workspace" ACTIVE="true" />
+    </TOOL_MANAGER>
+</PROJECT>
+
