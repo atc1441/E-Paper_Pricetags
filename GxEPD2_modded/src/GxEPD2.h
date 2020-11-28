@@ -68,7 +68,8 @@ class GxEPD2
       GDEW075Z09,  Waveshare_7_5_bwr = GDEW075Z09,
       GDEW075Z08,  Waveshare_7_5_bwr_Z08 = GDEW075Z08,
       GDEH075Z90,  Waveshare_7_5_bwr_Z90 = GDEH075Z90,
-	  SOLUM1160,   SOLUM_11_6_bwr = SOLUM1160
+	  SOLUM1160,   SOLUM_11_6_bwr = SOLUM1160,
+      WFD0750BF19,  Waveshare_7_5_bwr_F19 = WFD0750BF19
     };
 };
 

@@ -1,13 +1,2 @@
-IDEL:/8258_ble_remote.bin
-IDEL:/ATC_Thermometer.bin
-IDEL:/ble_ll_ota.o
-IDEL:/BLE_test.bin
-IDEL:/pricetagFlash.bin
-IDEL:/EDITEDMi Thermo Backupmini.bin
-IDEL:/b0e28c6e5932bba59fb19290e626b138_upd_miaomiaoce.sensor_ht.h1.bin
-IDEL:/BLE_test.elf
-IDEL:/BootROM88MZ100.bin
-IDEL:/Mi Thermo Backupmini.bin
-IDEL:/OOOOk8258_ble_remote.bin
-IDEL:/RF_RX.hex
-IDEL:/ROM.bin
+IADD:0000001a:/CC1110Dump.hex
+IDSET:/CC1110Dump.hex:c0a83817b911237553563609500

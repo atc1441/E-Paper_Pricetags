@@ -10,3 +10,6 @@
 
 ## 6" Version
 - This one should be compatible with the GxEPD2 library but is not tested, it is recomendet to Hack the stock PCB by adding a USB connector and a 5V bodge wire and reflash the MZ100 SOC to enable USB
+
+## 7.5" Version
+- To use it with Arduino and GxEPD2 copy the modded library into your Arduino library folder and open the GxEPD2_Example and uncomment the GxEPD2_750c_F19 display, its under ESP32 section, if you want to use it with a different Arduino you need to copy it or edit it for that one / pinout
