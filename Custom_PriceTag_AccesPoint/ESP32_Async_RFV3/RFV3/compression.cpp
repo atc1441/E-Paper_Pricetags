@@ -14,10 +14,9 @@ int compressImageNONE(uint8_t *pData, int iOffset, int iLen)
 {
   int width, height;
   int x, y, offset;
-  uint8_t c, cOld, *s, *d, *pBitmap, *pOut, *pTemp;
-  uint8_t *pStart, *pEnd;
+  uint8_t *s = 0, *d, *pBitmap, *pOut, *pTemp;
+  uint8_t *pEnd;
   uint16_t u16Check;
-  int iCount; // repeat and non-repeat counts
   int pitch, bsize;
   int iSize, iCompressedSize, bTopDown = 1;
 
@@ -87,7 +86,6 @@ int compressImageNONE(uint8_t *pData, int iOffset, int iLen)
   pEnd = pTemp + (height * bsize);
   d = &pOut[30];
 
-  pStart = s = pTemp;
   while (s < pEnd)
   {
     *d++ = *s++;

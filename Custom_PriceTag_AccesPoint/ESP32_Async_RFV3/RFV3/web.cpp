@@ -41,7 +41,6 @@ void init_web() {
   Serial.println("");
   Serial.print("Connected! IP address: ");
   Serial.println(WiFi.localIP());
-  MDNS.addService("http", "tcp", 80);
   SPIFFS.begin(true);
 
   server.addHandler(new SPIFFSEditor(SPIFFS, http_username, http_password));
@@ -49,6 +48,29 @@ void init_web() {
   server.on("/heap", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
   });
+
+  
+
+  server.on("/add_display", HTTP_GET, [] (AsyncWebServerRequest * request) {
+    int id;
+    String cmd;
+    if (request->hasParam("id") && request->hasParam("serial")) {
+      id = request->getParam("id")->value().toInt();
+      cmd = request->getParam("serial")->value();
+      int cmd_len = cmd.length() / 2;
+      set_display_id(id);
+
+      uint8_t temp_buffer[cmd_len + 1];
+      hexCharacterStringToBytes(temp_buffer, cmd);
+      set_buffer_length(cmd_len);
+      set_data_to_send(temp_buffer, cmd_len);
+      set_is_data_waiting(true);
+      request->send(200, "text/plain", "OK cmd to display " + String(id) + " " + cmd + " Len: " + String(cmd_len));
+      return;
+    }
+    request->send(200, "text/plain", "Wrong parameter");
+  });
+  
 
   server.on("/set_file", HTTP_GET, [] (AsyncWebServerRequest * request) {
     int id;

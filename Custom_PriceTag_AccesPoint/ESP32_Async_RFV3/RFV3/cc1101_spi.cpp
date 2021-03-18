@@ -16,18 +16,16 @@ void init_spi() {
 
 void spi_start() {
   digitalWrite(SS_PIN, LOW);
+  vspi->beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0));
 }
 
 void spi_end() {
+  vspi->endTransaction();
   digitalWrite(SS_PIN, HIGH);
 }
 
 uint8_t spi_putc(uint8_t data) {
-  uint8_t return_value;
-  vspi->beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0));
-  return_value = vspi->transfer(data);
-  vspi->endTransaction();
-  return return_value;
+  return vspi->transfer(data);
 }
 
 void spi_write_strobe(uint8_t spi_instr)
@@ -75,18 +73,6 @@ void spi_write_burst(uint8_t spi_instr, uint8_t *pArr, uint8_t length)
   for (uint8_t i = 0; i < length ; i++)
   {
     spi_putc(pArr[i]);
-  }
-  spi_end();
-}
-
-
-void send_radio_tx_burst(uint8_t buffer[], uint8_t length) {
-  spi_start();
-  spi_putc(0x7F);
-  spi_putc(length);
-  for (uint8_t i = 0; i < length ; i++)
-  {
-    spi_putc(buffer[i]);
   }
   spi_end();
 }

@@ -24,29 +24,36 @@
 mode_class *currentMode = &modePlaceholder;
 mode_class *tempMode = &modeIdle;
 
+volatile int interrupt_counter = 0;
+
 volatile bool int_fired = false;
-void IRAM_ATTR GDO2_interrupt() {
-  if (currentMode == &modeSniff)
-    currentMode->interrupt();
-  else
+void IRAM_ATTR GDO2_interrupt()
+{
+  interrupt_counter++;
+ // if (currentMode == &modeSniff)
+ //   currentMode->interrupt();
+ // else
     int_fired = true;
 }
 
-void init_interrupt() {
+void init_interrupt()
+{
   log_verbose("GDO2 interrupt init");
   pinMode(GDO2, INPUT);
   attachInterrupt(GDO2, GDO2_interrupt, FALLING);
   log_verbose("GDO2 interrupt init done");
 }
 
-void setup() {
+void setup()
+{
   init_log();
   init_spi();
-  if (!init_radio()) {
-    while (1) {
+  if (!init_radio())
+  {
+    while (1)
+    {
       log_verbose("Radio not working!!! ERROR");
       delay(1000);
-
     }
   }
   init_interrupt();
@@ -54,59 +61,74 @@ void setup() {
   init_web();
 }
 
-void loop() {
-  if (int_fired) {
+void loop()
+{
+  if (int_fired)
+  {
     int_fired = false;
     currentMode->interrupt();
   }
-  if (currentMode != tempMode) {
+  if (currentMode != tempMode)
+  {
     currentMode->post();
     currentMode = tempMode;
     log_main("Mode changed to " + currentMode->get_name());
     currentMode->pre();
   }
   currentMode->main();
-  if (check_new_interval()) {
+  if (check_new_interval())
+  {
+    log_main("Count: "+ String(interrupt_counter));
     currentMode->new_interval();
   }
 }
 
-void set_mode_idle() {
+void set_mode_idle()
+{
   tempMode = &modeIdle;
 }
 
-void set_mode_sync() {
+void set_mode_sync()
+{
   tempMode = &modeSync;
 }
 
-void set_mode_full_sync() {
+void set_mode_full_sync()
+{
   tempMode = &modeFullSync;
 }
 
-void set_mode_trans() {
+void set_mode_trans()
+{
   tempMode = &modeTrans;
 }
 
-void set_mode_wu() {
+void set_mode_wu()
+{
   tempMode = &modeWu;
 }
 
-void set_mode_wu_activation() {
+void set_mode_wu_activation()
+{
   tempMode = &modeWuAct;
 }
 
-void set_mode_wun_activation() {
+void set_mode_wun_activation()
+{
   tempMode = &modeWunAct;
 }
 
-void set_mode_activation() {
+void set_mode_activation()
+{
   tempMode = &modeActivation;
 }
 
-void set_mode_sniff() {
+void set_mode_sniff()
+{
   tempMode = &modeSniff;
 }
 
-String get_mode_string() {
+String get_mode_string()
+{
   return currentMode->get_name();
 }

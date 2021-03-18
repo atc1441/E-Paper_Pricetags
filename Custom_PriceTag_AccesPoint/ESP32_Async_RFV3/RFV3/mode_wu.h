@@ -22,8 +22,6 @@ class ModeWu : public mode_class
     {
       log_main(mode_name);
       wakeup_start_time = millis();
-      CC1101_set_freq(get_wu_channel());
-      CC1101_set_net_id(0);
 
       memset (tx_wu_buffer, 0xff, 10);
       tx_wu_buffer[0] = 0x00;
@@ -52,11 +50,9 @@ class ModeWu : public mode_class
       Serial.print(" 0x");
       Serial.println(tx_wu_buffer[9], HEX);
 
-      cc1101_prepaire_tx();
-      cc1101_idle();
-      cc1101_tx();
-      set_fifo_interrupt(2, 14);
+      cc1101_prepaire_tx(get_wu_channel(), 0);
       wakeup();
+      cc1101_tx();
     }
 
     virtual void main()
@@ -82,10 +78,10 @@ class ModeWu : public mode_class
     void wakeup() {
       if (millis() - wakeup_start_time > 15500) {
         log_main("WAKEUP done");
-        set_mode_full_sync();
-        return;
-      }
-      send_radio_tx_burst(tx_wu_buffer, 10);
+        set_mode_full_sync();        
+      }else{
+        cc1101_tx_fill(tx_wu_buffer, 10);
+      }      
     }
 
 };

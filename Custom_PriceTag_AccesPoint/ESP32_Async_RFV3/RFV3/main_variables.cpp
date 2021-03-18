@@ -10,14 +10,14 @@
 volatile int main_state = 0;
 volatile uint8_t slot_address = 0x00;
 bool last_to_short = false;
-int rx_timeout_ms = 50;
+int rx_timeout_ms = 40;
 /*END Base variables*/
 
 /*Display specific variables*/
 bool is_data_waiting = false;
 uint8_t data_slot = 0x00;
 uint16_t display_id = 0x0000;//0x0000-0xfffe 0xffff = broadcast
-uint8_t network_id = 0x01;//0-255
+uint8_t network_id = 1;//0-255
 /*END Display specific variables*/
 
 /*Activation specific variables*/
