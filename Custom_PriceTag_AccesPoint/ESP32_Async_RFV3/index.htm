@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>ESL test</title>
+
+</head>
+<body onload="jsoner()">
+  
+  <div>
+  <h1>ESL config</h1>
+  <p>Simple web inerface to controll ESL displays</p>      
+  </div>
+  <div id="senden0">
+    Activates a new display:<br>
+  <label for="serial">Serial:</label>
+  <input type="text" id="serial" name="serial" value="JM10029630B">
+  <label for="disp_id">New id:</label>
+  <input type="text" id="disp_id" name="disp_id" value="123">
+  <button onclick='senden("activate_display?serial="+document.getElementById("serial").value+"&id="+document.getElementById("disp_id").value)'>Activate new display</button>
+  <button onclick='senden("get_last_activation")'>Get activation status</button>
+  <br><br>
+  </div>
+  
+  
+  <div id="senden1">
+   Send a cmd to display:<br>
+  <label for="disp_id1">Id:</label>
+  <input type="text" id="disp_id1" name="disp_id1" value="123">
+  <label for="cmd">CMD:</label>
+  <input type="text" id="cmd" name="cmd" value="85050506000101">
+   <button onclick='senden("set_cmd?id="+document.getElementById("disp_id1").value+"&cmd="+document.getElementById("cmd").value)'>Send CMD</button>
+   <button onclick='senden("set_buffer?id="+document.getElementById("disp_id1").value)'>Send Buffer</button>
+  <button onclick='senden("get_answer")'>Get CMD status</button>
+   <br>
+  <label for="file">Filename:</label>
+  <input type="text" id="file" name="file" value="buffer.bin">
+   <button onclick='senden("set_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file").value)'>Send file from spiffs</button>
+   <br>
+  <label for="file1">Filename:</label>
+  <input type="text" id="file1" name="file1" value="image.bmp">
+   <button onclick='senden("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&comp=0")'>Send .bmp NONE compression</button>
+   <button onclick='senden("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&comp=1")'>Send .bmp RLE compression</button>
+   <button onclick='senden("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&comp=2")'>Send .bmp ARITH compression</button>
+   
+   <br><br>
+   </div>
+  
+   
+   
+  
+  <div id="senden2">
+   Sniff RF data:<br>
+  <label for="sniff_freq">Freq 0-73  4=Wakeup channel:</label>
+  <input type="text" id="sniff_freq" name="sniff_freq" value="4">
+  <label for="sniff_net_id">Net_ID:</label>
+  <input type="text" id="sniff_net_id" name="sniff_net_id" value="0">
+   <button onclick='senden("set_sniff?freq="+document.getElementById("sniff_freq").value+"&net_id="+document.getElementById("sniff_net_id").value)'>Start sniffing</button>
+  <button onclick='senden("get_sniff")'>Get sniff status</button>
+   <br><br>
+   </div>
+   
+   
+  
+  <div id="senden3">
+   Set Freq and ID:<br>
+  <label for="the_freq">Freq 0-73  4=Wakeup channel:</label>
+  <input type="text" id="the_freq" name="the_freq" value="0">
+  <label for="the_net_id">Net_ID:</label>
+  <input type="text" id="the_net_id" name="the_net_id" value="1">
+   <button onclick='senden("set_id?freq="+document.getElementById("the_freq").value+"&net_id="+document.getElementById("the_net_id").value)'>Set IDs</button>
+   <button onclick='senden("set_wu_channel?freq="+document.getElementById("the_freq").value)'>WU Channel</button>
+   <br><br>
+   </div>
+   
+  
+  <div id="senden4">
+   Do a full sync:<br>
+  <button onclick='senden("heap")'>Get Heap</button>
+  <button onclick='senden("set_mode?mode=sync")'>Do sync</button>
+  <button onclick='senden("set_mode?mode=idle")'>End sniff</button>
+  <button onclick='senden("delete_file")'>delete sniff log</button>
+   
+   <br><br>
+   </div>
+  
+  <div id="senden6">
+   Set Num slots:<br>
+  <label for="num_slots">Num slots 2,4,8,16,32 or 64:</label>
+  <input type="text" id="num_slots" name="num_slots" value="2">
+   <button onclick='senden("set_num_slot?num_slots="+document.getElementById("num_slots").value)'>Set num_slots</button>
+   <br><br>
+   </div>
+   
+  <div id="answer"></div>
+    <div id="content"></div>
+      <div id="dot">O</div>
+    <script>
+        
+        function senden(sendeit)
+       {
+           var xmlHttp = new XMLHttpRequest();
+
+           xmlHttp.onreadystatechange = function() {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                {
+                   document.getElementById('answer').innerHTML = xmlHttp.responseText;
+                  
+                }
+            };
+            xmlHttp.open("GET", sendeit, true); // true for asynchronous
+            xmlHttp.send(null);
+            
+            //setTimeout(function(){document.getElementById('answer').innerHTML ="<br>";},1700);
+        }
+        
+    
+        
+        
+        
+        function jsoner() {
+        var array;
+        var xmlHttp = new XMLHttpRequest();
+        
+    
+           xmlHttp.onreadystatechange = function() {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                {
+                 
+                
+            document.getElementById("content").innerHTML = xmlHttp.responseText;
+            if (document.getElementById("dot").innerHTML == "O") document.getElementById("dot").innerHTML="o"; else document.getElementById("dot").innerHTML="O";
+                }
+            };
+            xmlHttp.open("GET", 'get_mode', true); // true for asynchronous
+            xmlHttp.send(null);
+        setTimeout(jsoner,1000+Math.floor(Math.random() * 100));
+        }
+          
+    
+    </script>
+</body>
+</html>
