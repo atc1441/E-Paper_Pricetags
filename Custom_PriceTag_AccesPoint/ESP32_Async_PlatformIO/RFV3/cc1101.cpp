@@ -29,7 +29,7 @@ uint8_t cc1101_frequency_list[73 * 3] = {
 int curr_freq = -1;
 int curr_net_id = -1;
 
-bool init_radio()
+uint8_t init_radio()
 {
   log_verbose("Radio init");
   digitalWrite(SS_PIN, LOW);
@@ -43,8 +43,12 @@ bool init_radio()
   log_verbose("Radio version: " + String(version_cc1101));
   if (version_cc1101 == 0x00 || version_cc1101 == 0xFF)
   {
-    log_verbose("Radio not working!!!");
-    return false;
+    return 1;
+  }
+
+  if (cc1101_test_gpio(CC1101_REG_IOCFG2, GDO2))
+  {
+    return 2;
   }
 
   spi_write_register(CC1101_REG_IOCFG2, 0x06);  // GPIO2 Interrupt on SYNC send or received
@@ -85,8 +89,19 @@ bool init_radio()
   CC1101_set_freq(get_wu_channel());
   CC1101_set_net_id(get_network_id());
 
-  log_verbose("Radio init done");
-  return true;
+  return 0;
+}
+
+uint8_t cc1101_test_gpio(uint8_t GPIO_CONFIG_REG, uint8_t pin)
+{
+  pinMode(pin, INPUT);
+  spi_write_register(GPIO_CONFIG_REG, 0b01101001); //Active_LOW,CHIP_RDY_n
+  delay(5);
+  if (!digitalRead(pin))return 1;
+  spi_write_register(GPIO_CONFIG_REG, 0b00101001); //Active_HIGH,CHIP_RDY_n
+  delay(5);
+  if (digitalRead(pin))return 2;
+  return 0;
 }
 
 void CC1101_set_freq(uint8_t freq)
@@ -119,72 +134,102 @@ void CC1101_set_net_id(uint8_t id)
   }
 }
 
+void cc1101_flush_buffers()
+{
+  spi_write_strobe(CC1101_CMD_SFTX);
+  delayMicroseconds(100);
+  spi_write_strobe(CC1101_CMD_SFRX);
+  delayMicroseconds(100);
+}
+
 void cc1101_idle()
 {
   spi_write_strobe(CC1101_CMD_SIDLE);
-  spi_write_strobe(CC1101_CMD_SFTX);
-  spi_write_strobe(CC1101_CMD_SFRX);
+
+  while ((spi_read_register(CC1101_STATUS_MARCSTATE) & 0x1F) != 0x01)
+  {
+  }
+
+  delayMicroseconds(100);
+  cc1101_flush_buffers();
 }
 
-void cc1101_rx()
+int broadcast_mode = -1;
+int threshold_mode = -1;
+void cc1101_rx(uint8_t broadcast_rx)
 {
-  spi_write_register(CC1101_REG_FIFOTHR, 0x0E); // Set RX threshold to 64byte's
+  if (broadcast_rx)
+  {
+    if (broadcast_mode == 0)
+    {
+      spi_write_register(CC1101_REG_PKTCTRL1, 0b00001100); //CRC_flush,Append_RSSI_&_LQI,No Address check
+      broadcast_mode = 1;
+    }
+  }
+  else
+  {
+    if (broadcast_mode == 1)
+    {
+      spi_write_register(CC1101_REG_PKTCTRL1, 0b00001110); //CRC_flush,Append_RSSI_&_LQI,Address_&_Broadcast_check
+      broadcast_mode = 0;
+    }
+  }
+  if (threshold_mode == 1)
+  {
+    spi_write_register(CC1101_REG_FIFOTHR, 0x0E); // Set RX threshold to 64byte's
+    threshold_mode = 0;
+  }
   spi_write_strobe(CC1101_CMD_SIDLE);
-  spi_write_strobe(CC1101_CMD_SFTX);
-  spi_write_strobe(CC1101_CMD_SFRX);
+  cc1101_flush_buffers();
   spi_write_strobe(CC1101_CMD_SRX);
+
+  while ((spi_read_register(CC1101_STATUS_MARCSTATE) & 0x1F) != 0x0D)
+  {
+  }
+
+  delayMicroseconds(100);
 }
 
 void cc1101_tx()
 {
-  spi_write_register(CC1101_REG_FIFOTHR, 0x00); // Set TX threshold to 61byte's
+  if (threshold_mode == 0)
+  {
+    spi_write_register(CC1101_REG_FIFOTHR, 0x00); // Set TX threshold to 61byte's
+    threshold_mode = 1;
+  }
   spi_write_strobe(CC1101_CMD_STX);
+  delayMicroseconds(100);
 }
 
-void cc1101_prepaire_tx(uint8_t input_freq, uint8_t input_net_id)
+uint8_t cc1101_prepaire_tx(uint8_t input_freq, uint8_t input_net_id)
 {
 
   cc1101_idle();
   CC1101_set_freq(input_freq);
   CC1101_set_net_id(input_net_id);
-
-  // in this time the LBT will be awaited on GPIO0 of the CC1101,(Listen before talk) if the noise is to high we should not send to go after regulations
-  long last_100_millis = millis();
-  while (millis() - last_100_millis < 100)
-  {
-    spi_write_strobe(CC1101_CMD_SFTX);
-  }
-
-  cc1101_idle();
   spi_write_strobe(CC1101_CMD_SCAL);
 
-  long temp_timeout_time = millis();
+  long last_100_millis = millis();
   uint8_t temp_read_cali = 0;
   while (temp_read_cali != 1)
   {
     temp_read_cali = spi_read_register(CC1101_STATUS_MARCSTATE);
-    if (millis() - temp_timeout_time > 250)
+    if (millis() - last_100_millis > 100)
     {
-      log_normal("Timeout radio calibration 1");
-      break;
+      return 1; //Calibration 1 timeout
     }
   }
   spi_write_strobe(CC1101_CMD_SRX);
-  temp_timeout_time = millis();
   while (temp_read_cali != 0x0D)
   {
     temp_read_cali = spi_read_register(CC1101_STATUS_MARCSTATE);
-    if (millis() - temp_timeout_time > 250)
+    if (millis() - last_100_millis > 100)
     {
-      log_normal("Timeout radio calibration 2");
-      break;
+      return 2; //Calibration 2 timeout
     }
   }
-  while (millis() - last_100_millis < 102)
-  {
-  }
-
   cc1101_idle();
+  return 0;
 }
 
 void cc1101_tx_fill(uint8_t buffer[], uint8_t length)

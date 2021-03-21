@@ -1,12 +1,13 @@
 #pragma once
 
-bool init_radio();
+uint8_t init_radio();
+uint8_t cc1101_test_gpio(uint8_t GPIO_CONFIG_REG, uint8_t pin);
 void CC1101_set_freq(uint8_t freq);
 void CC1101_set_net_id(uint8_t id);
 void cc1101_idle();
-void cc1101_rx();
+void cc1101_rx(uint8_t broadcast_rx);
 void cc1101_tx();
-void cc1101_prepaire_tx(uint8_t input_freq, uint8_t input_net_id);
+uint8_t cc1101_prepaire_tx(uint8_t input_freq, uint8_t input_net_id);
 void cc1101_tx_fill(uint8_t buffer[], uint8_t length);
 int cc1101_read_fifo(uint8_t buffer[]);
 

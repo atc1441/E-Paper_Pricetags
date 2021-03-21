@@ -9,7 +9,7 @@ public:
     switch (tx_state)
     {
     case 1:
-      cc1101_rx();
+      cc1101_rx(0);
       tx_state = 3;
       rx_start_time = millis();
       break;
@@ -32,6 +32,7 @@ public:
         set_trans_mode(0);
         restore_current_settings();
         set_last_activation_status(true);
+        reset_full_sync_count();
         set_mode_wu();
       }
       else
@@ -88,7 +89,7 @@ public:
     case 0: //Handle new beginning
       time_left = 1100 - (millis() - get_last_slot_time());
       log_main("TIME LEFT: " + String(time_left));
-      if (time_left < 150)
+      if (time_left < 250)
       {
         set_last_to_short(true);
         cc1101_idle();
@@ -113,8 +114,13 @@ public:
       {
         log_main("RX_TIMEOUT!!!");
         timeout_counter++;
-        if (timeout_counter > (get_trans_mode()?80:30))
+        if (timeout_counter > (get_trans_mode() ? 80 : 30))
         {
+          if (get_trans_mode())
+          {
+            set_trans_mode(0);
+            restore_current_settings();
+          }
           set_is_data_waiting(false);
           cc1101_idle();
           set_mode_idle();
@@ -320,13 +326,7 @@ private:
 
     if (len == 0)
     {
-      if (ack_in == 0x8000)
-      {
-        Serial.println("ACK was 0x8000 and true");
-
-        return true;
-      }
-      Serial.print("ACK len 0 false");
+      Serial.print("ACK len 0 ");
       Serial.println(ack_in, HEX);
       return true;
     }

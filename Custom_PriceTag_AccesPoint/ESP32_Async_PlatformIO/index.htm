@@ -39,9 +39,9 @@
    <br>
   <label for="file1">Filename:</label>
   <input type="text" id="file1" name="file1" value="image.bmp">
-   <button onclick='senden("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&comp=0")'>Send .bmp NONE compression</button>
-   <button onclick='senden("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&comp=1")'>Send .bmp RLE compression</button>
-   <button onclick='senden("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&comp=2")'>Send .bmp ARITH compression</button>
+  <label for="file1">Filename color 2:</label>
+  <input type="text" id="file2" name="file2" value="">
+   <button onclick='senden("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&file1="+document.getElementById("file2").value)'>Send .bmp</button>
    
    <br><br>
    </div>

@@ -23,7 +23,7 @@
 mode_class *currentMode = &modePlaceholder;
 mode_class *tempMode = &modeIdle;
 
-volatile int interrupt_counter = 0;
+volatile int interrupt_counter = 1;
 
 volatile bool int_fired = false;
 void IRAM_ATTR GDO2_interrupt()
@@ -44,15 +44,20 @@ void setup()
 {
   init_log();
   init_spi();
-  if (!init_radio())
+  uint8_t radio_status = init_radio();
+  if (radio_status)
   {
     while (1)
     {
-      log_verbose("Radio not working!!! ERROR");
+      if (radio_status == 1)
+        Serial.println("Radio not working!!! ERROR");
+      if (radio_status == 2)
+        Serial.println("GPIO2 Interrupt input not working");
       delay(1000);
     }
   }
   init_interrupt();
+  init_timer();
   init_web();
 }
 
@@ -74,6 +79,7 @@ void loop()
   if (check_new_interval())
   {
     log_main("Count: "+ String(interrupt_counter));
+    interrupt_counter = 0;
     currentMode->new_interval();
   }
 }

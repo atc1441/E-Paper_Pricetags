@@ -9,7 +9,7 @@ public:
     if (is_in_tx)
     {
       is_in_tx = false;
-      cc1101_rx();
+      cc1101_rx(0);
       rx_start_time = millis();
     }
     else
@@ -22,6 +22,7 @@ public:
         CC1101_set_freq(get_freq());
         CC1101_set_net_id(get_network_id());
         set_last_activation_status(true);
+        reset_full_sync_count();
         set_mode_idle();
       }
       else

@@ -78,61 +78,29 @@ void init_web()
 
   server.on("/set_bmp_file", HTTP_GET, [](AsyncWebServerRequest *request) {
     int id;
-    int compression;
-    int iCompressedLen;
-    String filename;
-    if (request->hasParam("id") && request->hasParam("file") && request->hasParam("comp"))
+    int iCompressedLen = 0;
+    String filename = "";
+    String filename_color = "";
+    if (request->hasParam("id") && request->hasParam("file"))
     {
       id = request->getParam("id")->value().toInt();
       filename = request->getParam("file")->value();
-      compression = request->getParam("comp")->value().toInt();
 
       set_display_id(id);
+      if (request->hasParam("file1"))
+        filename_color = request->getParam("file1")->value();
 
-      File file = SPIFFS.open("/" + filename, "rb");
-      if (file == 0)
-      {
-        request->send(200, "text/plain", "Could not open file");
-        return;
-      }
+      iCompressedLen = load_img_to_bufer("/" + filename, "/" + filename_color);
 
-      long size;
-      file.seek(0, SeekEnd);
-      size = file.position();
-      file.seek(0, SeekSet);
-
-      unsigned char *buffer = (unsigned char *)malloc((unsigned long)size);
-      if (buffer == NULL)
+      if (iCompressedLen)
       {
-        file.close();
-        request->send(200, "text/plain", "Could not malloc buffer");
-        return;
-      }
-      file.read(buffer, (size_t)size);
-      file.close();
-
-      if (compression == 0)
-      {
-        iCompressedLen = compressImageNONE(buffer, 0, size);
-      }
-      else if (compression == 1)
-      {
-        iCompressedLen = compressImageRLE(buffer, 0, size);
-      }
-      else if (compression == 2)
-      {
-        request->send(200, "text/plain", "Arithmetic comopression is not supported right now");
-        return;
+        set_is_data_waiting(true);
+        request->send(200, "text/plain", "OK cmd to display " + String(id) + " File: " + filename + " Len: " + String(iCompressedLen));
       }
       else
       {
-        request->send(200, "text/plain", "No valid compression supplied");
-        return;
+        request->send(200, "text/plain", "Something wrong with the file");
       }
-
-      set_trans_buffer(buffer, iCompressedLen);
-      set_is_data_waiting(true);
-      request->send(200, "text/plain", "OK cmd to display " + String(id) + " File: " + filename + " Len: " + String(iCompressedLen));
       return;
     }
     request->send(200, "text/plain", "Wrong parameter");
@@ -205,7 +173,7 @@ void init_web()
   });
 
   server.on("/get_mode", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", "lot " + String(get_slot_address()) +" mode " + get_mode_string() + " bytes left: " + String(get_still_to_send()) + " Open: " + String(get_trans_file_open()) + " is waiting: " + String(get_is_data_waiting_raw()));
+    request->send(200, "text/plain", "NetID " + String(get_network_id()) + " freq " + String(get_freq()) + " slot " + String(get_slot_address()) + " mode " + get_mode_string() + " bytes left: " + String(get_still_to_send()) + " Open: " + String(get_trans_file_open()) + " is waiting: " + String(get_is_data_waiting_raw()));
   });
 
   server.on("/set_mode", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -256,7 +224,6 @@ void init_web()
   server.on("/delete_file", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", "OK delete sniff file");
     deleteFile("/answers.txt");
-    deleteFile("/answers_n.txt");
   });
 
   server.on("/set_num_slot", HTTP_GET, [](AsyncWebServerRequest *request) {
