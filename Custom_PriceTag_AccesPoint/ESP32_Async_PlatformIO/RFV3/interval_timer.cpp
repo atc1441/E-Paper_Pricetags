@@ -8,14 +8,14 @@ hw_timer_t *timer = NULL;
 volatile SemaphoreHandle_t timerSemaphore;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
-volatile long _last_interval_millis, _interval_counter;
-long last_interval_millis, interval_counter;
+volatile long _last_interval_millis, _increasement;
+long last_interval_millis, increasement;
 
 void IRAM_ATTR interval_timer()
 {
   portENTER_CRITICAL_ISR(&timerMux);
-  _interval_counter++;
   _last_interval_millis = millis();
+  _increasement++;
   portEXIT_CRITICAL_ISR(&timerMux);
   xSemaphoreGiveFromISR(timerSemaphore, NULL);
 }
@@ -36,10 +36,12 @@ bool check_new_interval()
   if (xSemaphoreTake(timerSemaphore, 0) == pdTRUE)
   {
     portENTER_CRITICAL(&timerMux);
-    interval_counter = _interval_counter;
     last_interval_millis = _last_interval_millis;
+    increasement = _increasement;
+    _increasement = 0;
     portEXIT_CRITICAL(&timerMux);
-    increment_slot_address();
+    while (increasement--)
+      increment_slot_address();
     return 1;
   }
   return 0;

@@ -30,10 +30,8 @@ public:
       if (get_trans_mode())
       {
         set_trans_mode(0);
-        restore_current_settings();
-        set_last_activation_status(true);
-        reset_full_sync_count();
-        set_mode_wu();
+        set_last_activation_status(3);
+        set_trans_mode_last(16);
       }
       else
       {
@@ -118,6 +116,7 @@ public:
         {
           if (get_trans_mode())
           {
+            set_last_activation_status(2);
             set_trans_mode(0);
             restore_current_settings();
           }
@@ -249,6 +248,7 @@ private:
     else
     {
       Serial.println("Is only rx");
+      ack_cont_data = 0;
       tx_data_buffer_int[id_offset + 3] = 0x80 | packet_counter_rx;
       if (display_more_data)
       {
@@ -390,7 +390,7 @@ private:
 
     uint16_t ack_in = data_array[7 + id_offset] | (data_array[6 + id_offset] << 8);
 
-    if (!(id_offset > 0) && !(check_ack(ack_in, last_position_to_go_back_counter, ack_cont_data)))
+    if (ack_cont_data && !(id_offset > 0) && !(check_ack(ack_in, last_position_to_go_back_counter, ack_cont_data)))
     { //data was not fully received, will resend last parts
       curr_data_position = last_position_to_go_back;
       packet_counter = last_position_to_go_back_counter;

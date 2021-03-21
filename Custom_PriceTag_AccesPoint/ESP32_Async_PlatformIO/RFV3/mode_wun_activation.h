@@ -16,19 +16,19 @@ public:
   virtual void pre()
   {
     log_main(mode_name);
-    set_last_activation_status(false);
+    set_last_activation_status(1);
 
     wakeup_start_time = millis();
 
     memset(tx_wu_buffer, 0xff, 10);
     tx_wu_buffer[0] = 0x00;
-    tx_wu_buffer[1] = 0xff;                // New Version Activation
-    tx_wu_buffer[2] = 0x05;                // Num Periods per slot
-    tx_wu_buffer[3] = 0x4c;                // Slot time in MS LOW
-    tx_wu_buffer[4] = 0x04;                // Slot time in MS HIGH
+    tx_wu_buffer[1] = 0xff; // New Version Activation
+    tx_wu_buffer[2] = 0x05; // Num Periods per slot
+    tx_wu_buffer[3] = 0x4c; // Slot time in MS LOW
+    tx_wu_buffer[4] = 0x04; // Slot time in MS HIGH
     tx_wu_buffer[5] = 0x10; // Num Slots Activation
     tx_wu_buffer[6] = 0x02;
-    tx_wu_buffer[7] = get_freq() + 1; // Frequenzy
+    tx_wu_buffer[7] = 0x01; // Frequenzy
     tx_wu_buffer[8] = 0x03;
     tx_wu_buffer[9] = 0xfe; // Used NetID for Activation
 
@@ -72,14 +72,14 @@ public:
   }
 
 private:
-  String mode_name = "Wakeup Activation";
+  String mode_name = "Wakeup new Activation";
 
   long wakeup_start_time;
   uint8_t tx_wu_buffer[10];
 
   void wakeup()
   {
-    if (millis() - wakeup_start_time > 15500)
+    if (millis() - wakeup_start_time > 16000)
     {
       uint8_t temp_freq = get_freq();
       uint8_t temp_network_id = get_network_id();
@@ -136,7 +136,7 @@ private:
           0xE7,
           0x03,
 
-          /*Max missed sync periods but unknown so better leave at 0x06*/ 0x06/*(uint8_t)(60 / (get_num_slots() + 1))*/,
+          /*Max missed sync periods but unknown so better leave at 0x06*/ (uint8_t)(60 / (get_num_slots() + 1)),
 
           /*General config*/ 0x00,
           0x01,

@@ -21,7 +21,7 @@ public:
         cc1101_idle();
         CC1101_set_freq(get_freq());
         CC1101_set_net_id(get_network_id());
-        set_last_activation_status(true);
+        set_last_activation_status(3);
         reset_full_sync_count();
         set_mode_idle();
       }
@@ -59,6 +59,7 @@ public:
           log_main("no connection possible, exit activation");
           cc1101_idle();
           set_mode_idle();
+          set_last_activation_status(2);
           return;
         }
         log_main("RX Timeout retry");

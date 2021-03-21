@@ -28,11 +28,13 @@ bool get_last_to_short();
 void set_last_to_short(bool state);
 int get_rx_timeout();
 
-bool get_last_activation_status();
-void set_last_activation_status(bool state);
+int get_last_activation_status();
+void set_last_activation_status(int state);
 
 /* NEW MODE */
 void set_trans_mode(int state);
 int get_trans_mode();
 void save_current_settings();
 void restore_current_settings();
+void set_trans_mode_last(int state);
+bool check_trans_mode_last();

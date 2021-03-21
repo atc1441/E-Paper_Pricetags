@@ -23,13 +23,14 @@
 mode_class *currentMode = &modePlaceholder;
 mode_class *tempMode = &modeIdle;
 
-volatile int interrupt_counter = 1;
+volatile int interrupt_counter = 0;
+int no_count_counter = 0;
 
 volatile bool int_fired = false;
 void IRAM_ATTR GDO2_interrupt()
 {
   interrupt_counter++;
-    int_fired = true;
+  int_fired = true;
 }
 
 void init_interrupt()
@@ -78,7 +79,28 @@ void loop()
   currentMode->main();
   if (check_new_interval())
   {
-    log_main("Count: "+ String(interrupt_counter));
+    log_main("Count: " + String(interrupt_counter));
+    if (interrupt_counter == 0)
+    {
+      if (no_count_counter++ > 5)
+      {
+        log_main("no interrupts anymore, something is broken, trying to fix it now");
+        if (get_trans_mode())
+        {
+          set_last_activation_status(0);
+          set_trans_mode(0);
+          restore_current_settings();
+        }
+        if (currentMode == &modeIdle)
+          set_mode_full_sync();
+        else
+          set_mode_idle();
+      }
+    }
+    else
+    {
+      no_count_counter = 0;
+    }
     interrupt_counter = 0;
     currentMode->new_interval();
   }

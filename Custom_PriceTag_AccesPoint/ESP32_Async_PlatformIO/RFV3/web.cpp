@@ -141,6 +141,17 @@ void init_web()
       if (serial_len == 11)
       {
         id = request->getParam("id")->value().toInt();
+
+        set_is_data_waiting(false);
+
+        if (get_trans_mode())
+        {
+          set_trans_mode(0);
+          restore_current_settings();
+          set_last_activation_status(0);
+          reset_full_sync_count();
+        }
+
         set_display_id(id);
 
         serial_array[0] = serial[0];
@@ -166,14 +177,48 @@ void init_web()
   });
 
   server.on("/get_last_activation", HTTP_GET, [](AsyncWebServerRequest *request) {
-    String act_status = "has failed";
-    if (get_last_activation_status())
-      act_status = "was successful";
-    request->send(200, "text/plain", "Last activation " + act_status);
+    String acti_status = "";
+    switch(get_last_activation_status()){
+      case 0:
+      acti_status = "not started";
+      break;
+      case 1:
+      acti_status = "started";
+      break;
+      case 2:
+      acti_status = "timeout";
+      break;
+      case 3:
+      acti_status = "successful";
+      break;
+      defaul:
+      acti_status = "Error";
+      break;
+    }
+    request->send(200, "text/plain", "Last activation " + acti_status);
   });
 
   server.on("/get_mode", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", "NetID " + String(get_network_id()) + " freq " + String(get_freq()) + " slot " + String(get_slot_address()) + " mode " + get_mode_string() + " bytes left: " + String(get_still_to_send()) + " Open: " + String(get_trans_file_open()) + " is waiting: " + String(get_is_data_waiting_raw()));
+    String acti_status = "";
+    switch(get_last_activation_status()){
+      case 0:
+      acti_status = "not started";
+      break;
+      case 1:
+      acti_status = "started";
+      break;
+      case 2:
+      acti_status = "timeout";
+      break;
+      case 3:
+      acti_status = "successful";
+      break;
+      defaul:
+      acti_status = "Error";
+      break;
+    }
+
+    request->send(200, "text/plain", "Activation " + acti_status +" NetID " + String(get_network_id()) + " freq " + String(get_freq()) + " slot " + String(get_slot_address()) + " mode " + get_mode_string() + " bytes left: " + String(get_still_to_send()) + " Open: " + String(get_trans_file_open()) + " is waiting: " + String(get_is_data_waiting_raw()));
   });
 
   server.on("/set_mode", HTTP_GET, [](AsyncWebServerRequest *request) {

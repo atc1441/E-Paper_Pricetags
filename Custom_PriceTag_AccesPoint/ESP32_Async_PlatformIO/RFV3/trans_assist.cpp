@@ -135,10 +135,12 @@ String get_last_receive_string()
     return last_receive_string;
 }
 
-int get_compress_method_from_size(int width, int height)
-{                                      // 2= Arith, 1=RLE, 0=No
+int get_compress_method_from_size(int width, int height, int *big_address)
+{ // 2= Arith, 1=RLE, 0=No
+    *big_address = 0;
     if (width == 640 && height == 384) // Chroma74
     {
+        *big_address = 1;
         return 2;
     }
     else if (width == 400 && height == 300) // Chroma42
@@ -219,7 +221,8 @@ int load_img_to_bufer(String &path, String &path1)
         if (!file_color)
             colormode = 0;
     }
-    int compression_mode = get_compress_method_from_size(bmp_infos.width, bmp_infos.height);
+    int big_address = 0;
+    int compression_mode = get_compress_method_from_size(bmp_infos.width, bmp_infos.height, &big_address);
 
     if (compression_mode == 2) //Arith
     {
@@ -258,7 +261,7 @@ int load_img_to_bufer(String &path, String &path1)
     file.close();
     file_is_open = 0;
 
-    length_to_send = fill_header(data_to_send, comp_size, bmp_infos.height, bmp_infos.width, compression_mode, colormode, 0);
+    length_to_send = fill_header(data_to_send, comp_size, bmp_infos.height, bmp_infos.width, compression_mode, colormode, big_address, 0);
 
     /*//if logging of compressed data is needed uncomment this one
     File file_log = SPIFFS.open("/path.bin", "wb");
@@ -298,8 +301,9 @@ int load_img_to_bufer_rle(File file_in, _bmp_s *bmp_infos)
     return comp_size;
 }
 
-int fill_header(uint8_t *buffer_out, int compression_size, int height, int width, int compression_type, int color, uint16_t checksum)
+int fill_header(uint8_t *buffer_out, int compression_size, int height, int width, int compression_type, int color, int big_address, uint16_t checksum)
 {
+    int header_len = 32;
     // fill the output data so it can directly be send to the display
     buffer_out[0] = 0x83;
     buffer_out[1] = 0x19;
@@ -317,19 +321,27 @@ int fill_header(uint8_t *buffer_out, int compression_size, int height, int width
     buffer_out[26] = color ? 0x21 : 0x00; // 0 for one color 21 for two color
 
     buffer_out[27] = 0x84;
-    buffer_out[28] = 0x80;
-    buffer_out[29] = 0x00;
 
-    buffer_out[30] = (uint8_t)(compression_size >> 8);
-    buffer_out[31] = (uint8_t)(compression_size >> 0);
+    if (1/*big_address*/)
+    {
+        buffer_out[28] = 0x80;
+        buffer_out[29] = 0x00;
+        buffer_out[30] = (uint8_t)(compression_size >> 8);
+        buffer_out[31] = (uint8_t)(compression_size >> 0);
+    }
+    else
+    {
+        header_len = 30;
+        buffer_out[28] = (uint8_t)(compression_size >> 8) | 0x80;
+        buffer_out[29] = (uint8_t)(compression_size >> 0);
+    }
+    buffer_out[compression_size + header_len + 0] = 0x85;
+    buffer_out[compression_size + header_len + 1] = 0x05;
+    buffer_out[compression_size + header_len + 2] = 0x08;
+    buffer_out[compression_size + header_len + 3] = 0x00;
+    buffer_out[compression_size + header_len + 4] = 0x00;
+    buffer_out[compression_size + header_len + 5] = 0x01;
+    buffer_out[compression_size + header_len + 6] = 0x01;
 
-    buffer_out[compression_size + 32 + 0] = 0x85;
-    buffer_out[compression_size + 32 + 1] = 0x05;
-    buffer_out[compression_size + 32 + 2] = 0x08;
-    buffer_out[compression_size + 32 + 3] = 0x00;
-    buffer_out[compression_size + 32 + 4] = 0x00;
-    buffer_out[compression_size + 32 + 5] = 0x01;
-    buffer_out[compression_size + 32 + 6] = 0x01;
-
-    return 32 + compression_size + 7;
+    return header_len + compression_size + 7;
 }

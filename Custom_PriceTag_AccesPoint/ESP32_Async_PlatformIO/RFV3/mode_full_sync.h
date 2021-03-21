@@ -21,7 +21,7 @@ public:
   {
     log_main(mode_name);
     fully_sync_start_time = millis();
-    full_sync_counter = ((get_num_slots() + 1) * 3) - 1;
+    full_sync_counter = ((get_num_slots() + 1) * 2) - 1;
   }
 
   virtual void main()

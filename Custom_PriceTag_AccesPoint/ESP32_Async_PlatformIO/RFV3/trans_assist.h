@@ -35,9 +35,10 @@ void add_to_receive_buffer(uint8_t *buffer);
 void save_receive_buffer();
 String get_last_receive_string();
 
+int get_compress_method_from_size(int width, int height, int *big_address);
 uint8_t open_bmp(String &path, _bmp_s *bmp_infos);
 int load_img_to_bufer(String &path, String &path1);
 int load_img_to_bufer_none(File file_in, _bmp_s *bmp_infos);
 int load_img_to_bufer_rle(File file_in, _bmp_s *bmp_infos);
 
-int fill_header(uint8_t *buffer_out, int compression_size, int height, int width, int compression_type, int color, uint16_t checksum);
+int fill_header(uint8_t *buffer_out, int compression_size, int height, int width, int compression_type, int color,int big_address, uint16_t checksum);

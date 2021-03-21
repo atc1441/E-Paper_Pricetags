@@ -4,6 +4,7 @@
 #include "main_variables.h"
 #include "cc1101_spi.h"
 #include "cc1101.h"
+#include "RFV3.h"
 #include "interval_timer.h"
 
 /*Base variables*/
@@ -87,7 +88,7 @@ void set_freq(uint8_t state)
 
 bool get_is_data_waiting()
 {
-  if (slot_address == data_slot && is_data_waiting && (after_full_sync_count >= 2))
+  if (slot_address == data_slot && is_data_waiting && (after_full_sync_count >= 1))
   {
     return true;
   }
@@ -170,13 +171,13 @@ int get_rx_timeout()
   return rx_timeout_ms;
 }
 
-bool last_activation_status = false;
-bool get_last_activation_status()
+int last_activation_status = 0;
+int get_last_activation_status()
 {
   return last_activation_status;
 }
 
-void set_last_activation_status(bool state)
+void set_last_activation_status(int state)
 {
   last_activation_status = state;
 }
@@ -209,5 +210,28 @@ void restore_current_settings()
   set_network_id(temp_network_id);
   set_num_slot(temp_num_slots);
 }
+int trans_last_mode = 0;
+bool trans_wait_mode = 0;
+void set_trans_mode_last(int state)
+{
+  trans_wait_mode = 1;
+  trans_last_mode = state;
+}
 
+bool check_trans_mode_last()
+{
+  if (trans_wait_mode)
+  {
+    if (trans_last_mode <= 0)
+    {
+      trans_wait_mode = 0;
+      restore_current_settings();
+      reset_full_sync_count();
+      set_mode_wu();
+      return true;
+    }
+    trans_last_mode--;
+  }
+  return false;
+}
 /* END New Activation mode */

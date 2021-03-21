@@ -12,7 +12,7 @@ class ModeWu : public mode_class
     virtual void new_interval()
     {
 
-      if (millis() - wakeup_start_time > 20000) {
+      if (millis() - wakeup_start_time > 17000) {
         log_main("Something wrong, back to idle");
         set_mode_idle();
       }
@@ -76,7 +76,7 @@ class ModeWu : public mode_class
     uint8_t tx_wu_buffer[10];
 
     void wakeup() {
-      if (millis() - wakeup_start_time > 15500) {
+      if (millis() - wakeup_start_time > 16000) {
         log_main("WAKEUP done");
         set_mode_full_sync();        
       }else{
