@@ -31,6 +31,7 @@ void set_mode_sync();
 void set_mode_full_sync();
 void set_mode_trans();
 void set_mode_wu();
+void set_mode_wu_reset();
 void set_mode_wu_activation();
 void set_mode_wun_activation();
 void set_mode_activation();

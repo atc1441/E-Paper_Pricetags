@@ -17,6 +17,8 @@ typedef struct _bmp_s_tag
     int pitch;
     int bsize;
     int bTopDown;
+    int header_size;
+    uint16_t checksum;
 } _bmp_s;
 
 int get_len_send();
@@ -37,8 +39,8 @@ String get_last_receive_string();
 
 int get_compress_method_from_size(int width, int height, int *big_address);
 uint8_t open_bmp(String &path, _bmp_s *bmp_infos);
-int load_img_to_bufer(String &path, String &path1);
+int load_img_to_bufer(String &path, String &path1, bool save_file_to_spiffs);
 int load_img_to_bufer_none(File file_in, _bmp_s *bmp_infos);
 int load_img_to_bufer_rle(File file_in, _bmp_s *bmp_infos);
 
-int fill_header(uint8_t *buffer_out, int compression_size, int height, int width, int compression_type, int color,int big_address, uint16_t checksum);
+int fill_header(uint8_t *buffer_out, int compression_size, int height, int width, int compression_type, int color, int header_size, uint16_t checksum);

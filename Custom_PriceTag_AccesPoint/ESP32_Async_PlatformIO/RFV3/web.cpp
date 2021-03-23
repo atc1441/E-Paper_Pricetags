@@ -18,6 +18,7 @@
 #include <ESPAsyncWebServer.h>
 #include <SPIFFSEditor.h>
 #include "trans_assist.h"
+#include "settings.h"
 
 #include "wlan.h"
 
@@ -47,7 +48,6 @@ void init_web()
   Serial.println("");
   Serial.print("Connected! IP address: ");
   Serial.println(WiFi.localIP());
-  SPIFFS.begin(true);
 
   server.addHandler(new SPIFFSEditor(SPIFFS, http_username, http_password));
 
@@ -79,18 +79,23 @@ void init_web()
   server.on("/set_bmp_file", HTTP_GET, [](AsyncWebServerRequest *request) {
     int id;
     int iCompressedLen = 0;
+    int save_compressed_file_to_spiffs = 0;
     String filename = "";
     String filename_color = "";
     if (request->hasParam("id") && request->hasParam("file"))
     {
       id = request->getParam("id")->value().toInt();
+      if (request->hasParam("save_comp_file"))
+      {
+        save_compressed_file_to_spiffs = (request->getParam("save_comp_file")->value().toInt() ? 1 : 0);
+      }
       filename = request->getParam("file")->value();
 
       set_display_id(id);
       if (request->hasParam("file1"))
         filename_color = request->getParam("file1")->value();
 
-      iCompressedLen = load_img_to_bufer("/" + filename, "/" + filename_color);
+      iCompressedLen = load_img_to_bufer("/" + filename, "/" + filename_color, save_compressed_file_to_spiffs);
 
       if (iCompressedLen)
       {
@@ -176,22 +181,62 @@ void init_web()
     request->send(200, "text/plain", "Wrong parameter");
   });
 
+  server.on("/recover_display", HTTP_GET, [](AsyncWebServerRequest *request) {
+    String serial;
+    uint8_t serial_array[7];
+    if (request->hasParam("serial"))
+    {
+      serial = request->getParam("serial")->value();
+      int serial_len = serial.length();
+      if (serial_len == 11)
+      {
+
+        set_is_data_waiting(false);
+
+        if (get_trans_mode())
+        {
+          set_trans_mode(0);
+          restore_current_settings();
+          set_last_activation_status(0);
+          reset_full_sync_count();
+        }
+
+        serial_array[0] = serial[0];
+        serial_array[1] = serial[1];
+        serial_array[2] = (serial[2] - 0x30) << 4 | (serial[3] - 0x30);
+        serial_array[3] = (serial[4] - 0x30) << 4 | (serial[5] - 0x30);
+        serial_array[4] = (serial[6] - 0x30) << 4 | (serial[7] - 0x30);
+        serial_array[5] = (serial[8] - 0x30) << 4 | (serial[9] - 0x30);
+        serial_array[6] = serial[10];
+
+        set_serial(serial_array);
+
+        set_mode_wu_reset();
+
+        request->send(200, "text/plain", "OK trying to recover display " + serial);
+        return;
+      }
+    }
+    request->send(200, "text/plain", "Wrong parameter");
+  });
+
   server.on("/get_last_activation", HTTP_GET, [](AsyncWebServerRequest *request) {
     String acti_status = "";
-    switch(get_last_activation_status()){
-      case 0:
+    switch (get_last_activation_status())
+    {
+    case 0:
       acti_status = "not started";
       break;
-      case 1:
+    case 1:
       acti_status = "started";
       break;
-      case 2:
+    case 2:
       acti_status = "timeout";
       break;
-      case 3:
+    case 3:
       acti_status = "successful";
       break;
-      defaul:
+    default:
       acti_status = "Error";
       break;
     }
@@ -200,25 +245,26 @@ void init_web()
 
   server.on("/get_mode", HTTP_GET, [](AsyncWebServerRequest *request) {
     String acti_status = "";
-    switch(get_last_activation_status()){
-      case 0:
+    switch (get_last_activation_status())
+    {
+    case 0:
       acti_status = "not started";
       break;
-      case 1:
+    case 1:
       acti_status = "started";
       break;
-      case 2:
+    case 2:
       acti_status = "timeout";
       break;
-      case 3:
+    case 3:
       acti_status = "successful";
       break;
-      defaul:
+    default:
       acti_status = "Error";
       break;
     }
 
-    request->send(200, "text/plain", "Activation " + acti_status +" NetID " + String(get_network_id()) + " freq " + String(get_freq()) + " slot " + String(get_slot_address()) + " mode " + get_mode_string() + " bytes left: " + String(get_still_to_send()) + " Open: " + String(get_trans_file_open()) + " is waiting: " + String(get_is_data_waiting_raw()));
+    request->send(200, "text/plain", "Activation " + acti_status + " NetID " + String(get_network_id()) + " freq " + String(get_freq()) + " slot " + String(get_slot_address()) + " bytes left: " + String(get_still_to_send()) + " Open: " + String(get_trans_file_open()) + " is waiting: " + String(get_is_data_waiting_raw())+ "<br>mode " + get_mode_string() );
   });
 
   server.on("/set_mode", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -266,9 +312,11 @@ void init_web()
     }
     request->send(200, "text/plain", "Wrong parameter");
   });
+
   server.on("/delete_file", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", "OK delete sniff file");
+    request->send(200, "text/plain", "OK delete file");
     deleteFile("/answers.txt");
+    deleteFile("/");
   });
 
   server.on("/set_num_slot", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -337,37 +385,4 @@ void init_web()
   });
 
   server.begin();
-}
-
-void appendFile(const char *path, String message)
-{
-  Serial.printf("Appending to file: %s\r\n", path);
-
-  File file = SPIFFS.open(path, FILE_APPEND);
-  if (!file)
-  {
-    Serial.println("- failed to open file for appending");
-    return;
-  }
-  if (file.print(message))
-  {
-    Serial.println("- message appended");
-  }
-  else
-  {
-    Serial.println("- append failed");
-  }
-}
-
-void deleteFile(const char *path)
-{
-  Serial.printf("Deleting file: %s\r\n", path);
-  if (SPIFFS.remove(path))
-  {
-    Serial.println("- file deleted");
-  }
-  else
-  {
-    Serial.println("- delete failed");
-  }
 }

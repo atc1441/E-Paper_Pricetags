@@ -8,6 +8,7 @@
 #include "class.h"
 #include "compression.h"
 #include "interval_timer.h"
+#include "settings.h"
 #include "web.h"
 #include "utils.h"
 #include "mode_sync.h"
@@ -15,6 +16,7 @@
 #include "mode_idle.h"
 #include "mode_trans.h"
 #include "mode_wu.h"
+#include "mode_wu_reset.h"
 #include "mode_wu_activation.h"
 #include "mode_wun_activation.h"
 #include "mode_activation.h"
@@ -44,6 +46,8 @@ void init_interrupt()
 void setup()
 {
   init_log();
+  SPIFFS.begin(true);
+  read_boot_settings();
   init_spi();
   uint8_t radio_status = init_radio();
   if (radio_status)
@@ -84,15 +88,20 @@ void loop()
     {
       if (no_count_counter++ > 5)
       {
+        no_count_counter = 0;
         log_main("no interrupts anymore, something is broken, trying to fix it now");
         if (get_trans_mode())
         {
-          set_last_activation_status(0);
           set_trans_mode(0);
           restore_current_settings();
         }
+        set_last_activation_status(0);
         if (currentMode == &modeIdle)
           set_mode_full_sync();
+        else if (currentMode == &modeFullSync || currentMode == &modeWu || currentMode == &modeWuAct || currentMode == &modeWunAct || currentMode == &modeWuReset || currentMode == &modeActivation)
+        {
+          currentMode->pre();
+        }
         else
           set_mode_idle();
       }
@@ -129,6 +138,11 @@ void set_mode_trans()
 void set_mode_wu()
 {
   tempMode = &modeWu;
+}
+
+void set_mode_wu_reset()
+{
+  tempMode = &modeWuReset;
 }
 
 void set_mode_wu_activation()

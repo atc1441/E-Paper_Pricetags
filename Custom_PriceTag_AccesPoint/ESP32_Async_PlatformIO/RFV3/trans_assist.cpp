@@ -10,6 +10,7 @@
 #include <FS.h>
 #include <SPIFFS.h>
 #include "arith.h"
+#include "settings.h"
 
 #define _receive_size 0x1000
 #define _send_size 65535
@@ -203,7 +204,7 @@ uint8_t open_bmp(String &path, _bmp_s *bmp_infos)
     return 0;
 }
 
-int load_img_to_bufer(String &path, String &path1)
+int load_img_to_bufer(String &path, String &path1, bool save_file_to_spiffs)
 {
     reset_trans_values();
     _bmp_s bmp_infos;
@@ -223,56 +224,57 @@ int load_img_to_bufer(String &path, String &path1)
     }
     int big_address = 0;
     int compression_mode = get_compress_method_from_size(bmp_infos.width, bmp_infos.height, &big_address);
+    bmp_infos.header_size = (big_address ? 32 : 30);
 
     if (compression_mode == 2) //Arith
     {
-        comp_size = encode_raw_image(file, &bmp_infos, &data_to_send[32], _send_size - 32 - 7);
+        comp_size = encode_raw_image(file, &bmp_infos, &data_to_send[bmp_infos.header_size], _send_size - 32 - 7);
         if (colormode)
-            comp_size += encode_raw_image(file_color, &bmp_infos, &data_to_send[32 + comp_size], _send_size - 7 - comp_size);
-        if (comp_size <= 0 && comp_size > _send_size)
+            comp_size += encode_raw_image(file_color, &bmp_infos, &data_to_send[bmp_infos.header_size + comp_size], _send_size - 7 - comp_size);
+        if (comp_size <= 0 && comp_size > ((bmp_infos.width + bmp_infos.height) / 8) * (colormode ? 2 : 1))
         { // if compression failed or to big do none compression
-            comp_size = load_img_to_bufer_none(file, &bmp_infos);
-            if (colormode)
-                comp_size += load_img_to_bufer_none(file_color, &bmp_infos);
             compression_mode = 0;
         }
     }
     else if (compression_mode == 1) //RLE
     {
-        comp_size = load_img_to_bufer_rle(file, &bmp_infos);
+        //TODO after RLE fully implemented remove compression mode change here!!!!
+        compression_mode = 0; //<-----THIS ONE
+                              /* comp_size = load_img_to_bufer_rle(file, &bmp_infos);
         if (colormode)
             comp_size += load_img_to_bufer_rle(file_color, &bmp_infos);
-        if (comp_size <= 0 && comp_size > _send_size)
+        if (comp_size <= 0 && comp_size > ((bmp_infos.width + bmp_infos.height) / 8) * (colormode ? 2 : 1))
         { // if compression failed or to big do none compression
-            comp_size = load_img_to_bufer_none(file, &bmp_infos);
-            if (colormode)
-                comp_size += load_img_to_bufer_none(file_color, &bmp_infos);
             compression_mode = 0;
-        }
+        }*/
     }
-    else //None
+
+    if (compression_mode == 0)
     {
         comp_size = load_img_to_bufer_none(file, &bmp_infos);
         if (colormode)
             comp_size += load_img_to_bufer_none(file_color, &bmp_infos);
     }
+
     if (colormode)
         file_color.close();
     file.close();
     file_is_open = 0;
 
-    length_to_send = fill_header(data_to_send, comp_size, bmp_infos.height, bmp_infos.width, compression_mode, colormode, big_address, 0);
+    length_to_send = fill_header(data_to_send, comp_size, bmp_infos.height, bmp_infos.width, compression_mode, colormode, bmp_infos.header_size, bmp_infos.checksum);
 
-    /*//if logging of compressed data is needed uncomment this one
-    File file_log = SPIFFS.open("/path.bin", "wb");
-    file_log.write(data_to_send, length_to_send);
-    file_log.close();*/
+    if (save_file_to_spiffs)
+    {
+        File file_log = SPIFFS.open("/last_compressed_img.bin", "wb");
+        file_log.write(data_to_send, length_to_send);
+        file_log.close();
+    }
     return length_to_send;
 }
 
 int load_img_to_bufer_none(File file_in, _bmp_s *bmp_infos)
 {
-    int comp_size = (bmp_infos->width + bmp_infos->height) / 8;
+    int comp_size = 0;
 
     for (int y = 0; y < bmp_infos->height; y++)
     {
@@ -280,7 +282,12 @@ int load_img_to_bufer_none(File file_in, _bmp_s *bmp_infos)
             file_in.seek(bmp_infos->offset + (bmp_infos->pitch * y), SeekSet);
         else
             file_in.seek(bmp_infos->offset + (bmp_infos->height - 1 - y) * bmp_infos->pitch, SeekSet);
-        file_in.read(&data_to_send[0x20 + comp_size], (size_t)bmp_infos->bsize);
+        file_in.read(&data_to_send[bmp_infos->header_size + comp_size], (size_t)bmp_infos->bsize);
+        for (int x = 0; x < bmp_infos->bsize; x++)
+        {
+            bmp_infos->checksum = bmp_infos->checksum + data_to_send[bmp_infos->header_size + comp_size + x];
+        }
+        comp_size += bmp_infos->bsize;
     }
     return comp_size;
 }
@@ -288,7 +295,7 @@ int load_img_to_bufer_none(File file_in, _bmp_s *bmp_infos)
 int load_img_to_bufer_rle(File file_in, _bmp_s *bmp_infos)
 {
     /*NOT FINISCHED its just none right now :D*/
-    int comp_size = (bmp_infos->width + bmp_infos->height) / 8;
+    int comp_size = 0;
 
     for (int y = 0; y < bmp_infos->height; y++)
     {
@@ -296,14 +303,18 @@ int load_img_to_bufer_rle(File file_in, _bmp_s *bmp_infos)
             file_in.seek(bmp_infos->offset + (bmp_infos->pitch * y), SeekSet);
         else
             file_in.seek(bmp_infos->offset + (bmp_infos->height - 1 - y) * bmp_infos->pitch, SeekSet);
-        file_in.read(&data_to_send[0x20 + comp_size], (size_t)bmp_infos->bsize);
+        file_in.read(&data_to_send[bmp_infos->header_size + comp_size], (size_t)bmp_infos->bsize);
+        for (int x = 0; x < bmp_infos->bsize; x++)
+        {
+            bmp_infos->checksum = bmp_infos->checksum + data_to_send[bmp_infos->header_size + comp_size + x];
+        }
+        comp_size += bmp_infos->bsize;
     }
     return comp_size;
 }
 
-int fill_header(uint8_t *buffer_out, int compression_size, int height, int width, int compression_type, int color, int big_address, uint16_t checksum)
+int fill_header(uint8_t *buffer_out, int compression_size, int height, int width, int compression_type, int color, int header_size, uint16_t checksum)
 {
-    int header_len = 32;
     // fill the output data so it can directly be send to the display
     buffer_out[0] = 0x83;
     buffer_out[1] = 0x19;
@@ -322,7 +333,7 @@ int fill_header(uint8_t *buffer_out, int compression_size, int height, int width
 
     buffer_out[27] = 0x84;
 
-    if (1/*big_address*/)
+    if (header_size == 32)
     {
         buffer_out[28] = 0x80;
         buffer_out[29] = 0x00;
@@ -331,17 +342,16 @@ int fill_header(uint8_t *buffer_out, int compression_size, int height, int width
     }
     else
     {
-        header_len = 30;
         buffer_out[28] = (uint8_t)(compression_size >> 8) | 0x80;
         buffer_out[29] = (uint8_t)(compression_size >> 0);
     }
-    buffer_out[compression_size + header_len + 0] = 0x85;
-    buffer_out[compression_size + header_len + 1] = 0x05;
-    buffer_out[compression_size + header_len + 2] = 0x08;
-    buffer_out[compression_size + header_len + 3] = 0x00;
-    buffer_out[compression_size + header_len + 4] = 0x00;
-    buffer_out[compression_size + header_len + 5] = 0x01;
-    buffer_out[compression_size + header_len + 6] = 0x01;
+    buffer_out[compression_size + header_size + 0] = 0x85;
+    buffer_out[compression_size + header_size + 1] = 0x05;
+    buffer_out[compression_size + header_size + 2] = 0x08;
+    buffer_out[compression_size + header_size + 3] = 0x00;
+    buffer_out[compression_size + header_size + 4] = 0x00;
+    buffer_out[compression_size + header_size + 5] = 0x01;
+    buffer_out[compression_size + header_size + 6] = 0x01;
 
-    return header_len + compression_size + 7;
+    return header_size + compression_size + 7;
 }

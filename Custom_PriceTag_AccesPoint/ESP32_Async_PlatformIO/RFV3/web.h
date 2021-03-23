@@ -19,5 +19,3 @@
 
 void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
 void init_web();
-void appendFile(const char * path, String message);
-void deleteFile(const char * path);
