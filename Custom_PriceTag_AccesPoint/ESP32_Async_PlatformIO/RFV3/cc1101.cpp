@@ -97,10 +97,12 @@ uint8_t cc1101_test_gpio(uint8_t GPIO_CONFIG_REG, uint8_t pin)
   pinMode(pin, INPUT);
   spi_write_register(GPIO_CONFIG_REG, 0b01101001); //Active_LOW,CHIP_RDY_n
   delay(5);
-  if (!digitalRead(pin))return 1;
+  if (!digitalRead(pin))
+    return 1;
   spi_write_register(GPIO_CONFIG_REG, 0b00101001); //Active_HIGH,CHIP_RDY_n
   delay(5);
-  if (digitalRead(pin))return 2;
+  if (digitalRead(pin))
+    return 2;
   return 0;
 }
 
@@ -122,6 +124,12 @@ void CC1101_set_freq(uint8_t freq)
     float f = (26000000.0f / 65536.0f) * (float)(IF);
     log_verbose("Radio set to base freq: (F=" + String(freq) + ") " + String(f / 1000000.0f) + " Mhz ");
   }
+}
+
+void CC1101_set_freq_offset(uint8_t freq_offset)
+{
+  spi_write_register(CC1101_REG_FSCTRL0, freq_offset);
+  log_verbose("Radio base freq offset: " + String(freq_offset));
 }
 
 void CC1101_set_net_id(uint8_t id)

@@ -330,6 +330,17 @@ void init_web()
     request->send(200, "text/plain", "Wrong parameter");
   });
 
+  server.on("/set_freq_offset", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if (request->hasParam("offset"))
+    {
+      int freq_offset = request->getParam("offset")->value().toInt();
+      request->send(200, "text/plain", "Ok set freq_offset: " + String(freq_offset));
+      CC1101_set_freq_offset(freq_offset);
+      return;
+    }
+    request->send(200, "text/plain", "Wrong parameter");
+  });
+
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.htm");
 
   server.onNotFound([](AsyncWebServerRequest *request) {
