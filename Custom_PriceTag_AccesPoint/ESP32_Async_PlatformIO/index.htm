@@ -42,6 +42,7 @@
   <label for="file1">Filename color 2:</label>
   <input type="text" id="file2" name="file2" value="">
    <button onclick='senden("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&file1="+document.getElementById("file2").value)'>Send .bmp</button>
+   <button onclick='senden("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&file1="+document.getElementById("file2").value+"&save_comp_file=1")'>Send .bmp and save compressed one on spiffs</button>
    
    <br><br>
    </div>
@@ -59,13 +60,20 @@
    
   
   <div id="senden4">
-   Do a full sync:<br>
   <button onclick='senden("heap")'>Get Heap</button>
   <button onclick='senden("set_mode?mode=sync")'>Do sync</button>
   <button onclick='senden("set_mode?mode=idle")'>Idle</button>
   <button onclick='senden("delete_file")'>delete log files</button>
    
    <br><br>
+   </div>
+  
+  <div id="senden5">
+   Recover display:<br>
+  <label for="serial2">Serial:</label>
+  <input type="text" id="serial2" name="serial2" value="JM10029630B">
+  <button onclick='senden("recover_display?serial="+document.getElementById("serial").value)'>Recover display</button>
+  <br><br>
    </div>
   
   <div id="senden6">

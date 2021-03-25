@@ -127,7 +127,7 @@ void save_receive_buffer()
     Serial.println(data_received);
     appendFile("/answers.txt", data_received);
 
-    last_receive_string = "Msg from display " + String(get_display_id() + " was: " + String(str));
+    last_receive_string = "Msg from display " + data_received;
     length_to_receive = 0;
 }
 

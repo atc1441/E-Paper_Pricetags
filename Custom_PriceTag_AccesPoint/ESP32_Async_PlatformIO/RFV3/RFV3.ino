@@ -28,11 +28,11 @@ mode_class *tempMode = &modeIdle;
 volatile int interrupt_counter = 0;
 int no_count_counter = 0;
 
-volatile bool int_fired = false;
+volatile int int_fired = 0;
 void IRAM_ATTR GDO2_interrupt()
 {
   interrupt_counter++;
-  int_fired = true;
+  int_fired++;
 }
 
 void init_interrupt()
@@ -70,7 +70,7 @@ void loop()
 {
   if (int_fired)
   {
-    int_fired = false;
+    int_fired--;
     currentMode->interrupt();
   }
   if (currentMode != tempMode)
