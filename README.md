@@ -27,5 +27,5 @@ https://github.com/me-no-dev/ESPAsyncWebServer
 And https://github.com/espressif/arduino-esp32
 Also a CC1101 868mhz! Module is needed, make shure to get a real 868mhz version, some seller write 868 when its an 433 module, the ebyte E07-868 module is proven to give good results
 
-A Youtube livestream with a long walktrough and overal explanation is available here:
+- A Youtube livestream with a long walktrough and overal explanation is available here:
 https://youtu.be/pRoFim3Egss
