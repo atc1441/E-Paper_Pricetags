@@ -1,0 +1,24 @@
+Firmware Header:
+94 0e 
+0 CMD = 14 with data
+1 length = 0E = 14 bytes
+
+35 6f 22 01 0d 03 05 02 00 00 00 00 00 00
+0 35 = LEN Firmware data LOW
+1 6f = LEN Firmware data HIGH
+2 22 = Checksum 0x100 - 8bit checksum
+3 01 = Compression method 0 = none, 1 = RLE
+4 0d = Model of display, 0D for EPOP50, 26 for Chroma74 others need to be bruteforced for now
+5 03 = Upgrade Limit V
+6 05 = Upgrade Limit V
+7 02 = Upgrade Limit V
+8 00
+9 00
+10 00
+11 00
+12 00
+13 00
+
+Actual Firmware data:
+95 80 00 6f 35 +++++++Data here+++++ For Chroma74
+95 ef 35 ++++++++Data here+++++ For the other displays
