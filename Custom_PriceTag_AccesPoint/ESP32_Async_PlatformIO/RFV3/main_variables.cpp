@@ -27,7 +27,7 @@ uint8_t serial_id[6];
 /*END Activation specific variables*/
 
 /*Network variables*/
-uint8_t num_slot = 16 - 1; //up to 16, when increased less power is used but it takes longer to update
+uint8_t num_slot = 4 - 1; //up to 16, when increased less power is used but it takes longer to update
 uint8_t main_freq = 0;
 int rounds_to_resync = 500;
 /*END Network variables*/

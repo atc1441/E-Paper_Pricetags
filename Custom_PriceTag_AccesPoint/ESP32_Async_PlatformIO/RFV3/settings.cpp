@@ -1,13 +1,15 @@
 #include "settings.h"
 #include <FS.h>
 #include <SPIFFS.h>
+#include "main_variables.h"
+#include "cc1101.h"
 
-File myFile;
 const char *settings_path = "/settings.txt";
 
 void read_boot_settings()
 {
-    String s, p;
+    File myFile;
+    String _line_freq, _line_net_id, _line_slots, _line_offset, _line_header;
     if (!SPIFFS.exists(settings_path))
     {
         Serial.println("Error opening the settings file");
@@ -16,18 +18,55 @@ void read_boot_settings()
     myFile = SPIFFS.open(settings_path, FILE_READ);
     Serial.print("File size: ");
     Serial.println(myFile.size());
-    s = myFile.readStringUntil('\n');
-    p = myFile.readStringUntil('\n');
+    _line_freq, _line_net_id, _line_slots, _line_offset, 
+    
+    
+    _line_header = myFile.readStringUntil('\n');
+    _line_freq = myFile.readStringUntil('\n');
+    _line_net_id = myFile.readStringUntil('\n');
+    _line_slots = myFile.readStringUntil('\n');
+    _line_offset = myFile.readStringUntil('\n');
+    
     myFile.close();
 
-    Serial.println("S1: " + split(s, ':',0));
-    Serial.println("S2: " + split(s, ':',1));
-    Serial.println("P1: " + split(p, ':',0));
-    Serial.println("P2: " + split(p, ':',1));
+    uint8_t temp_freq = split(_line_freq, ':', 1).toInt();
+    uint8_t temp_net_id = split(_line_net_id, ':', 1).toInt();
+    uint8_t temp_slots = split(_line_slots, ':', 1).toInt();
+    uint8_t temp_offset = split(_line_offset, ':', 1).toInt();
+
+    Serial.println("Freq read: " + String(temp_freq));
+    Serial.println("NetId read: " + String(temp_net_id));
+    Serial.println("Slots read: " + String(temp_slots));
+    Serial.println("Offset read: " + String(temp_offset));
+
+    set_freq(temp_freq);
+    set_network_id(temp_net_id);
+    set_num_slot(temp_slots);
+    CC1101_set_freq_offset(temp_offset);
 }
 
-void write_setting(String setting, String state)
+void save_settings_to_flash()
 {
+    File myFile;
+    myFile = SPIFFS.open(settings_path, FILE_WRITE);
+
+    if (!myFile)
+    {
+        Serial.println("Error opening file");
+        return;
+    }
+
+    myFile.print("General settings for ESP32 Pricetag AP\n");
+    myFile.printf("CHANNEL:%d:\n", get_freq());
+    myFile.printf("NET_ID:%d:\n", get_network_id());
+    myFile.printf("SLOTS:%d:\n", (get_num_slots() + 1));
+    myFile.printf("FREQ_OFFSET:%d:\n", get_freq_offset());
+    myFile.close();
+}
+
+void delete_settings_file()
+{
+    deleteFile(settings_path);
 }
 
 void appendFile(const char *path, String message)

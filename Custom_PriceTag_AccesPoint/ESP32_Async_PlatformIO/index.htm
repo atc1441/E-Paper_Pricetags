@@ -12,7 +12,7 @@
   <p>Simple web inerface to controll ESL displays</p>      
   </div>
   <div id="senden0">
-    Activates a new display:<br>
+  Activates a new display:<br>
   <label for="serial">Serial:</label>
   <input type="text" id="serial" name="serial" value="JM10029630B">
   <label for="disp_id">New id:</label>
@@ -24,72 +24,69 @@
   
   
   <div id="senden1">
-   Send a cmd to display:<br>
+  Send a cmd to display:<br>
   <label for="disp_id1">Id:</label>
   <input type="text" id="disp_id1" name="disp_id1" value="123">
   <label for="cmd">CMD:</label>
   <input type="text" id="cmd" name="cmd" value="85050106000101">
-   <button onclick='senden("set_cmd?id="+document.getElementById("disp_id1").value+"&cmd="+document.getElementById("cmd").value)'>Send CMD</button>
-   <button onclick='senden("set_buffer?id="+document.getElementById("disp_id1").value)'>Send Buffer</button>
+  <button onclick='senden("set_cmd?id="+document.getElementById("disp_id1").value+"&cmd="+document.getElementById("cmd").value)'>Send CMD</button>
+  <button onclick='senden("set_buffer?id="+document.getElementById("disp_id1").value)'>Send Buffer</button>
   <button onclick='senden("get_answer")'>Get CMD status</button>
-   <br>
+  <br>
+  Send an image or raw .bin to display:<br>
   <label for="file">Filename:</label>
   <input type="text" id="file" name="file" value="buffer.bin">
-   <button onclick='senden("set_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file").value)'>Send file from spiffs</button>
-   <br>
+  <button onclick='senden("set_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file").value)'>Send file from spiffs</button>
+  <br>
   <label for="file1">Filename:</label>
   <input type="text" id="file1" name="file1" value="image.bmp">
   <label for="file1">Filename color 2:</label>
   <input type="text" id="file2" name="file2" value="">
-   <button onclick='senden("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&file1="+document.getElementById("file2").value)'>Send .bmp</button>
-   <button onclick='senden("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&file1="+document.getElementById("file2").value+"&save_comp_file=1")'>Send .bmp and save compressed one on spiffs</button>
-   
-   <br><br>
-   </div>
+  <button onclick='senden("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&file1="+document.getElementById("file2").value)'>Send .bmp</button>
+  <button onclick='senden("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&file1="+document.getElementById("file2").value+"&save_comp_file=1")'>Send .bmp and save compressed one on spiffs</button>
+  <br><br>
+  </div>
 
-  <div id="senden3">
-   Set Freq and ID:<br>
-  <label for="the_freq">Freq 0-73  4=Wakeup channel:</label>
-  <input type="text" id="the_freq" name="the_freq" value="0">
-  <label for="the_net_id">Net_ID:</label>
-  <input type="text" id="the_net_id" name="the_net_id" value="1">
-   <button onclick='senden("set_id?freq="+document.getElementById("the_freq").value+"&net_id="+document.getElementById("the_net_id").value)'>Set IDs</button>
-   <button onclick='senden("set_wu_channel?freq="+document.getElementById("the_freq").value)'>WU Channel</button>
-   <br><br>
-   </div>
-   
+  
+  <div id="senden5">
+  Recover display:<br>
+  <label for="serial2">Serial:</label>
+  <input type="text" id="serial2" name="serial2" value="JM10029630B">
+  <button onclick='senden("recover_display?serial="+document.getElementById("serial").value)'>Recover display</button>
+  <br><br>
+  </div>
   
   <div id="senden4">
   <button onclick='senden("heap")'>Get Heap</button>
   <button onclick='senden("set_mode?mode=sync")'>Do sync</button>
   <button onclick='senden("set_mode?mode=idle")'>Idle</button>
   <button onclick='senden("delete_file")'>delete log files</button>
-   
-   <br><br>
-   </div>
-  
-  <div id="senden5">
-   Recover display:<br>
-  <label for="serial2">Serial:</label>
-  <input type="text" id="serial2" name="serial2" value="JM10029630B">
-  <button onclick='senden("recover_display?serial="+document.getElementById("serial").value)'>Recover display</button>
+  <button onclick='senden("reboot")'>Reboot ESP32</button>
   <br><br>
-   </div>
+  </div>
   
-  <div id="senden6">
-   Set Num slots:<br>
-  <label for="num_slots">Num slots 2,4,8,16,32 or 64:</label>
-  <input type="text" id="num_slots" name="num_slots" value="16">
-   <button onclick='senden("set_num_slot?num_slots="+document.getElementById("num_slots").value)'>Set num_slots</button>
-   <br><br>
-   </div>
-  
-  <div id="senden7">
-   Set base freq offset:<br>
+  <div id="settings stuff">
+  SETTINGS:<br>
+  Set Freq and ID:<br>
+  <label for="the_freq">Freq 0 - 71:</label>
+  <input type="text" id="the_freq" name="the_freq" value="0">
+  <label for="the_net_id">Net_ID 1 - 253:</label>
+  <input type="text" id="the_net_id" name="the_net_id" value="1">
+  <button onclick='senden("set_id?freq="+document.getElementById("the_freq").value+"&net_id="+document.getElementById("the_net_id").value)'>Set Freq & NetID</button><br>
+  Set Num slots:<br>
+  <label for="num_slots">Slots:</label>
+  <input type="text" id="num_slots" name="num_slots" value="4">
+  <button onclick='senden("set_num_slot?num_slots="+document.getElementById("num_slots").value)'>Set num_slots</button><br>
+  Set base freq offset:<br>
+  <label for="freq_offset">Offset -127 - 127:</label>
   <input type="text" id="freq_offset" name="freq_offset" value="0">
-   <button onclick='senden("set_freq_offset?offset="+document.getElementById("freq_offset").value)'>Set freq offset</button>
-   <br><br>
-   </div>
+  <button onclick='senden("set_freq_offset?offset="+document.getElementById("freq_offset").value)'>Set freq offset</button><br>
+  <button onclick='senden("save_settings")'>save_settings</button>
+  <button onclick='senden("delete_settings")'>delete settings file</button>
+  <button onclick='senden("get_settings")'>get settings</button>
+  <br><br>
+  </div>
+  
    
   <div id="answer"></div>
     <div id="content"></div>
@@ -107,10 +104,8 @@
                   
                 }
             };
-            xmlHttp.open("GET", sendeit, true); // true for asynchronous
+            xmlHttp.open("GET", sendeit, true);
             xmlHttp.send(null);
-            
-            //setTimeout(function(){document.getElementById('answer').innerHTML ="<br>";},1700);
         }
         
     
@@ -131,7 +126,7 @@
             if (document.getElementById("dot").innerHTML == "O") document.getElementById("dot").innerHTML="o"; else document.getElementById("dot").innerHTML="O";
                 }
             };
-            xmlHttp.open("GET", 'get_mode', true); // true for asynchronous
+            xmlHttp.open("GET", 'get_mode', true);
             xmlHttp.send(null);
         setTimeout(jsoner,1000+Math.floor(Math.random() * 100));
         }

@@ -4,6 +4,7 @@ uint8_t init_radio();
 uint8_t cc1101_test_gpio(uint8_t GPIO_CONFIG_REG, uint8_t pin);
 void CC1101_set_freq(uint8_t freq);
 void CC1101_set_freq_offset(uint8_t freq_offset);
+uint8_t get_freq_offset();
 void CC1101_set_net_id(uint8_t id);
 void cc1101_idle();
 void cc1101_rx(uint8_t broadcast_rx);

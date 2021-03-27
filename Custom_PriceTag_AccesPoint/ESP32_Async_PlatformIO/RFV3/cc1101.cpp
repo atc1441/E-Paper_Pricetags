@@ -126,10 +126,17 @@ void CC1101_set_freq(uint8_t freq)
   }
 }
 
+uint8_t _freq_offset = 0;
 void CC1101_set_freq_offset(uint8_t freq_offset)
 {
+  _freq_offset = freq_offset;
   spi_write_register(CC1101_REG_FSCTRL0, freq_offset);
   log_verbose("Radio base freq offset: " + String(freq_offset));
+}
+
+uint8_t get_freq_offset()
+{
+  return _freq_offset;
 }
 
 void CC1101_set_net_id(uint8_t id)

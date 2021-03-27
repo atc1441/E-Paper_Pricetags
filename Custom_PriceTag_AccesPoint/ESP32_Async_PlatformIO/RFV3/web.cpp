@@ -313,10 +313,29 @@ void init_web()
     request->send(200, "text/plain", "Wrong parameter");
   });
 
+  server.on("/reboot", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "OK Reboot");
+    ESP.restart();
+  });
+
   server.on("/delete_file", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", "OK delete file");
     deleteFile("/answers.txt");
     deleteFile("/");
+  });
+
+  server.on("/get_settings", HTTP_GET, [](AsyncWebServerRequest *request) {    
+    request->send(200, "text/plain", "SETTINGS:CHANNEL:"+String(get_freq())+":NET_ID:"+ String(get_network_id())+":SLOTS:"+String(get_num_slots() + 1)+":FREQ_OFFSET:"+String(get_freq_offset()));
+   });
+
+  server.on("/save_settings", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "OK saving settings");
+    save_settings_to_flash();
+  });
+
+  server.on("/delete_settings", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "OK delete settings");
+    delete_settings_file();
   });
 
   server.on("/set_num_slot", HTTP_GET, [](AsyncWebServerRequest *request) {

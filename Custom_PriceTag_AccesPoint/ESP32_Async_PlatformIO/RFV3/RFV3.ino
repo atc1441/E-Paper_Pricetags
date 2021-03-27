@@ -47,7 +47,6 @@ void setup()
 {
   init_log();
   SPIFFS.begin(true);
-  read_boot_settings();
   init_spi();
   uint8_t radio_status = init_radio();
   if (radio_status)
@@ -61,6 +60,7 @@ void setup()
       delay(1000);
     }
   }
+  read_boot_settings();
   init_interrupt();
   init_timer();
   init_web();
