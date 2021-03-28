@@ -70,7 +70,7 @@ private:
       uint8_t temp_freq = get_freq();
       uint8_t temp_network_id = get_network_id();
       uint16_t temp_display_id = get_display_id();
-      uint8_t temp_num_slots = get_num_slots();
+      uint8_t temp_num_slots = get_num_slots() +1;
       uint8_t temp_display_slot = temp_num_slots & temp_display_id;
 
       save_current_settings();
@@ -103,7 +103,7 @@ private:
           /*Display_ID*/ (uint8_t)(temp_display_id & 0xFF),
           (uint8_t)(temp_display_id >> 8),
 
-          /*Num slots temp_num_slots*/ (uint8_t)(temp_num_slots + 1),
+          /*Num slots temp_num_slots*/ (uint8_t)temp_num_slots ,
 
           /*Slot time in MS: 1100*/ 0x4C,
           0x04,
@@ -122,7 +122,7 @@ private:
           0xE7,
           0x03,
 
-          /*Max missed sync periods but unknown so better leave at 0x06*/ (uint8_t)(60 / (get_num_slots() + 1)),
+          /*Max missed sync periods*/ (uint8_t)(60 / temp_num_slots),
 
           /*General config*/ 0x00,
           0x01,
