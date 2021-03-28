@@ -17,3 +17,6 @@ after the first boot you can navigate with a browser to *ip*/edit and upload the
 
 The supported pictures must be monochrom .bmp and one image for each color. 
 the .bmp's need to have the same resolution as the wanted pricetag has
+
+
+### If you are using a "green" CC1101 868mhz module and it fails make shure to set an offset of 15 in the settings as it turned out their osci is not the best.
