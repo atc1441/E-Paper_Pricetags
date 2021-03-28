@@ -16,9 +16,13 @@
 ### Arduino
 - To use it with Arduino and GxEPD2 copy the modded library into your Arduino library folder and open the GxEPD2_Example and uncomment the GxEPD2_750c_F19 display, its under ESP32 section, if you want to use it with a different Arduino you need to copy it or edit it for that one / pinout
 
+- Here is a good manual on soldering the needed wires https://hackaday.io/project/175947-74-e-ink-shelf-label-used-as-a-weather-station
+
 ### Stock PCB / CC1110
 - To use the Stock PCB you can use the SDCC Example and compile your own code via the Combile.bat file in windows, currently it simply refreshes the display but its working.
 can be flashed via the CC-Debugger or another compatible programmer.
+
+- *Update* full custom firmware, http://dmitry.gr/?r=05.Projects&proj=29.%20eInk%20Price%20Tags
 
 ### Stock firmware 
 - To use the display with stock firmware and stock pcb you can use the ESP32 AccessPoint Emulator from the folder Custom_PriceTag_AccesPoint
