@@ -26,8 +26,3 @@ void log_verbose(String message) {
   log_time();
   Serial.println(" Verbose: " + message);
 }
-
-void log_isr(String message) {
-  log_time();
-  Serial.println(" ISR: " + message);
-}

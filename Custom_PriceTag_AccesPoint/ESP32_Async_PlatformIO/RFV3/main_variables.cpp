@@ -88,7 +88,7 @@ void set_freq(uint8_t state)
 
 bool get_is_data_waiting()
 {
-  if (slot_address == data_slot && is_data_waiting && (after_full_sync_count >= 1))
+  if (display_id == 0xffff || slot_address == data_slot && is_data_waiting && (after_full_sync_count >= 1))
   {
     return true;
   }

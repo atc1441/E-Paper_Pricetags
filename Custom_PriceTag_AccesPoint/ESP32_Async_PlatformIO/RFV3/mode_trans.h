@@ -253,7 +253,7 @@ private:
       if (display_more_data)
       {
         if (display_more_than_one)
-        { //Display want antother part of current data
+        { //Display want another part of current data
           display_more_than_one = false;
           number_of_con_data = 0x01;
           tx_data_buffer_int[id_offset + 5] = 0x2B;
@@ -326,8 +326,7 @@ private:
 
     if (len == 0)
     {
-      Serial.print("ACK len 0 ");
-      Serial.println(ack_in, HEX);
+      printf("ACK len 0 %04x\r\n", ack_in);
       return true;
     }
 
@@ -352,15 +351,7 @@ private:
         expected |= ((i >= end_pos) && (i < start_pos)) ? 0 : 1;
     }
 
-    Serial.print("ACK: 0x");
-    Serial.print(ack_in, HEX);
-    Serial.print(" expected ACK: ");
-    Serial.print(expected, HEX);
-    Serial.print(" state cont data: ");
-    Serial.print(counter);
-    Serial.print(" curr counter: ");
-    Serial.print(len);
-    Serial.println();
+    printf("ACK: 0x%04x expected ACK: %04x state cont data: %d curr counter: %d\r\n", ack_in, expected, counter, len);
 
     if (expected == ack_in)
       success = true;
@@ -390,7 +381,7 @@ private:
 
     uint16_t ack_in = data_array[7 + id_offset] | (data_array[6 + id_offset] << 8);
 
-    if (ack_cont_data && !(id_offset > 0) && !(check_ack(ack_in, last_position_to_go_back_counter, ack_cont_data)))
+    if (ack_cont_data && id_offset == 0 && !(check_ack(ack_in, last_position_to_go_back_counter, ack_cont_data)))
     { //data was not fully received, will resend last parts
       curr_data_position = last_position_to_go_back;
       packet_counter = last_position_to_go_back_counter;

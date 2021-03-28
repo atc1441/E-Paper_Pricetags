@@ -30,26 +30,12 @@ public:
     get_serial(serial);
     memcpy(&tx_wu_buffer[1], serial, 6);
 
-    Serial.print("Wu Reset: 0x");
-    Serial.print(tx_wu_buffer[0], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_wu_buffer[1], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_wu_buffer[2], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_wu_buffer[3], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_wu_buffer[4], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_wu_buffer[5], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_wu_buffer[6], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_wu_buffer[7], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_wu_buffer[8], HEX);
-    Serial.print(" 0x");
-    Serial.println(tx_wu_buffer[9], HEX);
+    printf("Wu Reset:");
+    for (int i = 0; i < 9; i++)
+    {
+      printf(" 0x%02x", tx_wu_buffer[i]);
+    }
+    printf("\r\n");
 
     cc1101_prepaire_tx(get_wu_channel(), 0);
     wakeup();

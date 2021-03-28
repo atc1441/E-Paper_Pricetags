@@ -18,15 +18,14 @@ void read_boot_settings()
     myFile = SPIFFS.open(settings_path, FILE_READ);
     Serial.print("File size: ");
     Serial.println(myFile.size());
-    _line_freq, _line_net_id, _line_slots, _line_offset, 
-    
-    
+    _line_freq, _line_net_id, _line_slots, _line_offset;
+
     _line_header = myFile.readStringUntil('\n');
     _line_freq = myFile.readStringUntil('\n');
     _line_net_id = myFile.readStringUntil('\n');
     _line_slots = myFile.readStringUntil('\n');
     _line_offset = myFile.readStringUntil('\n');
-    
+
     myFile.close();
 
     uint8_t temp_freq = split(_line_freq, ':', 1).toInt();

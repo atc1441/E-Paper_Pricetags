@@ -53,20 +53,12 @@ private:
     tx_sync_buffer[2] = get_slot_address();
     tx_sync_buffer[1] = full_sync_start;
 
-    Serial.print("Sync: 0x");
-    Serial.print(tx_sync_buffer[0], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_sync_buffer[1], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_sync_buffer[2], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_sync_buffer[3], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_sync_buffer[4], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_sync_buffer[5], HEX);
-    Serial.print(" 0x");
-    Serial.println(tx_sync_buffer[6], HEX);
+    printf("Full Sync:");
+    for (int i = 0; i < 6; i++)
+    {
+      printf(" 0x%02x", tx_sync_buffer[i]);
+    }
+    printf("\r\n");
 
     cc1101_prepaire_tx(get_freq(), 0);
     full_sync();

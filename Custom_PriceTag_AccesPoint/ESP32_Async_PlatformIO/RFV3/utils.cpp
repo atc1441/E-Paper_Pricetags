@@ -16,7 +16,6 @@
 #include <SPIFFSEditor.h>
 #include "utils.h"
 
-
 byte nibble(char c)
 {
   if (c >= '0' && c <= '9')
@@ -41,18 +40,14 @@ void hexCharacterStringToBytes(byte *byteArray, String hexString)
   for (byte charIndex = 0; charIndex < hexString.length(); charIndex++)
   {
     bool oddCharIndex = charIndex & 1;
-
     if (oddLength)
     {
-      // If the length is odd
       if (oddCharIndex)
       {
-        // odd characters go in high nibble
         currentByte = nibble(hexString[charIndex]) << 4;
       }
       else
       {
-        // Even characters go into low nibble
         currentByte |= nibble(hexString[charIndex]);
         byteArray[byteIndex++] = currentByte;
         currentByte = 0;
@@ -60,15 +55,12 @@ void hexCharacterStringToBytes(byte *byteArray, String hexString)
     }
     else
     {
-      // If the length is even
       if (!oddCharIndex)
       {
-        // Odd characters go into the high nibble
         currentByte = nibble(hexString[charIndex]) << 4;
       }
       else
       {
-        // Odd characters go into low nibble
         currentByte |= nibble(hexString[charIndex]);
         byteArray[byteIndex++] = currentByte;
         currentByte = 0;
@@ -77,16 +69,18 @@ void hexCharacterStringToBytes(byte *byteArray, String hexString)
   }
 }
 
-void tohex(unsigned char * in, size_t insz, char * out, size_t outsz)
+void tohex(unsigned char *in, size_t insz, char *out, size_t outsz)
 {
-  unsigned char * pin = in;
-  const char * hex = "0123456789ABCDEF";
-  char * pout = out;
-  for (; pin < in + insz; pout += 3, pin++) {
+  unsigned char *pin = in;
+  const char *hex = "0123456789ABCDEF";
+  char *pout = out;
+  for (; pin < in + insz; pout += 3, pin++)
+  {
     pout[0] = hex[(*pin >> 4) & 0xF];
-    pout[1] = hex[ *pin     & 0xF];
+    pout[1] = hex[*pin & 0xF];
     pout[2] = ':';
-    if (pout + 3 - out > outsz) {
+    if (pout + 3 - out > outsz)
+    {
       break;
     }
   }

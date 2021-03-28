@@ -32,22 +32,14 @@ public:
         tx_sync_buffer[2] |= 0x80;
       tx_sync_buffer[3] = get_display_id() >> 8;
       tx_sync_buffer[4] = get_display_id() & 0xff;
-    } // buffer 5 and 6 is a slot for a second display to contact
+    } // buffer 5 and 6 is a slot for a second display to contact but not used here
 
-    Serial.print("Sync: 0x");
-    Serial.print(tx_sync_buffer[0], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_sync_buffer[1], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_sync_buffer[2], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_sync_buffer[3], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_sync_buffer[4], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_sync_buffer[5], HEX);
-    Serial.print(" 0x");
-    Serial.println(tx_sync_buffer[6], HEX);
+    printf("Sync:");
+    for (int i = 0; i < 6; i++)
+    {
+      printf(" 0x%02x", tx_sync_buffer[i]);
+    }
+    printf("\r\n");
 
     cc1101_prepaire_tx(get_freq(), get_network_id());
     short_sync();

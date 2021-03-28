@@ -90,7 +90,6 @@ private:
 
   void activation_handler()
   {
-
     memset(tx_act_buffer, 0x00, 16);
 
     uint8_t serial[6];
@@ -188,38 +187,13 @@ private:
       tx_act_buffer[8] = 0xff;
       break;
     }
-    Serial.print("Activation: 0x");
-    Serial.print(tx_act_buffer[0], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[1], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[2], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[3], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[4], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[5], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[6], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[7], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[8], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[9], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[10], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[11], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[12], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[13], HEX);
-    Serial.print(" 0x");
-    Serial.print(tx_act_buffer[14], HEX);
-    Serial.print(" 0x");
-    Serial.println(tx_act_buffer[15], HEX);
+
+    printf("Activation:");
+    for (int i = 0; i < 15; i++)
+    {
+      printf(" 0x%02x", tx_act_buffer[i]);
+    }
+    printf("\r\n");
 
     cc1101_tx_fill(tx_act_buffer, 16);
     cc1101_tx();
@@ -238,14 +212,12 @@ private:
       return false;
     }
 
-    Serial.print(" Read_len:" + String(read_len));
-    Serial.print(" Data:");
+    printf("Read_len: %d Data:",read_len);
     for (int i = 0; i < read_len; i++)
     {
-      Serial.print(" 0x");
-      Serial.print(data_array[i], HEX);
+      printf(" 0x%02x", data_array[i]);
     }
-    Serial.println();
+    printf("\r\n");
 
     spi_write_strobe(CC1101_CMD_SIDLE);
     return true;
