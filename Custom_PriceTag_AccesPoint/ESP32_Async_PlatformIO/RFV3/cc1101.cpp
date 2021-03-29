@@ -71,7 +71,7 @@ uint8_t init_radio()
   spi_write_register(CC1101_REG_FOCCFG, 0x16);
   spi_write_register(CC1101_REG_BSCFG, 0x6c);
   spi_write_register(CC1101_REG_AGCCTRL2, 0x43);
-  spi_write_register(CC1101_REG_AGCCTRL1, 0x4B);
+  spi_write_register(CC1101_REG_AGCCTRL1, 0x48);// Not so hard on receiving data.
   spi_write_register(CC1101_REG_AGCCTRL0, 0x91);
   spi_write_register(CC1101_REG_FREND1, 0x56);
   spi_write_register(CC1101_REG_FREND0, 0x10);

@@ -1,6 +1,11 @@
 #pragma once
 #include "RFV3.h"
 
+
+#define NEW_ACTIVATION_SLOTS 4
+#define NEW_ACTIVATION_FREQ 8
+#define NEW_ACTIVATION_NETID 254
+
 class ModeWunAct : public mode_class
 {
 public:
@@ -22,15 +27,15 @@ public:
 
     memset(tx_wu_buffer, 0xff, 10);
     tx_wu_buffer[0] = 0x00;
-    tx_wu_buffer[1] = 0xff; // New Version Activation
+    tx_wu_buffer[1] = 0xff;
     tx_wu_buffer[2] = 0x05; // Num Periods per slot
     tx_wu_buffer[3] = 0x4c; // Slot time in MS LOW
     tx_wu_buffer[4] = 0x04; // Slot time in MS HIGH
-    tx_wu_buffer[5] = 0x10; // Num Slots Activation
-    tx_wu_buffer[6] = 0x02;
-    tx_wu_buffer[7] = 0x01; // Frequenzy
-    tx_wu_buffer[8] = 0x03;
-    tx_wu_buffer[9] = 0xfe; // Used NetID for Activation
+    tx_wu_buffer[5] = NEW_ACTIVATION_SLOTS; // Num Slots Activation
+    tx_wu_buffer[6] = 0x02;// maybe max missed syncs
+    tx_wu_buffer[7] = NEW_ACTIVATION_FREQ + 1; // Frequenzy
+    tx_wu_buffer[8] = 0x03; // CMD mode = New Activation
+    tx_wu_buffer[9] = NEW_ACTIVATION_NETID; // Used NetID for Activation
 
     printf("Wun Activation:");
     for (int i = 0; i < 9; i++)
@@ -65,7 +70,7 @@ private:
 
   void wakeup()
   {
-    if (millis() - wakeup_start_time > 16000)
+    if (millis() - wakeup_start_time > 15500)
     {
       uint8_t temp_freq = get_freq();
       uint8_t temp_network_id = get_network_id();
@@ -75,9 +80,9 @@ private:
 
       save_current_settings();
 
-      set_num_slot(0x10);
-      set_freq(0);
-      set_network_id(0xfe);
+      set_num_slot(NEW_ACTIVATION_SLOTS);
+      set_freq(NEW_ACTIVATION_FREQ);
+      set_network_id(NEW_ACTIVATION_NETID);
 
       uint8_t serial[7];
       get_serial(serial);
@@ -138,7 +143,7 @@ private:
 
       set_is_data_waiting(true);
       set_trans_mode(1);
-      set_mode_idle();
+      set_mode_full_sync();
     }
     else
     {
