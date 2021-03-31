@@ -1,7 +1,6 @@
 #pragma once
 #include "RFV3.h"
 
-
 #define NEW_ACTIVATION_SLOTS 4
 #define NEW_ACTIVATION_FREQ 8
 #define NEW_ACTIVATION_NETID 254
@@ -28,14 +27,14 @@ public:
     memset(tx_wu_buffer, 0xff, 10);
     tx_wu_buffer[0] = 0x00;
     tx_wu_buffer[1] = 0xff;
-    tx_wu_buffer[2] = 0x05; // Num Periods per slot
-    tx_wu_buffer[3] = 0x4c; // Slot time in MS LOW
-    tx_wu_buffer[4] = 0x04; // Slot time in MS HIGH
-    tx_wu_buffer[5] = NEW_ACTIVATION_SLOTS; // Num Slots Activation
-    tx_wu_buffer[6] = 0x02;// maybe max missed syncs
+    tx_wu_buffer[2] = 0x05;                    // Num Periods per slot
+    tx_wu_buffer[3] = 0x4c;                    // Slot time in MS LOW
+    tx_wu_buffer[4] = 0x04;                    // Slot time in MS HIGH
+    tx_wu_buffer[5] = NEW_ACTIVATION_SLOTS;    // Num Slots Activation
+    tx_wu_buffer[6] = 0x02;                    // maybe max missed syncs
     tx_wu_buffer[7] = NEW_ACTIVATION_FREQ + 1; // Frequenzy
-    tx_wu_buffer[8] = 0x03; // CMD mode = New Activation
-    tx_wu_buffer[9] = NEW_ACTIVATION_NETID; // Used NetID for Activation
+    tx_wu_buffer[8] = 0x03;                    // CMD mode = New Activation
+    tx_wu_buffer[9] = NEW_ACTIVATION_NETID;    // Used NetID for Activation
 
     printf("Wun Activation:");
     for (int i = 0; i < 9; i++)
@@ -75,7 +74,7 @@ private:
       uint8_t temp_freq = get_freq();
       uint8_t temp_network_id = get_network_id();
       uint16_t temp_display_id = get_display_id();
-      uint8_t temp_num_slots = get_num_slots() +1;
+      uint8_t temp_num_slots = get_num_slots() + 1;
       uint8_t temp_display_slot = temp_num_slots & temp_display_id;
 
       save_current_settings();
@@ -108,7 +107,7 @@ private:
           /*Display_ID*/ (uint8_t)(temp_display_id & 0xFF),
           (uint8_t)(temp_display_id >> 8),
 
-          /*Num slots temp_num_slots*/ (uint8_t)temp_num_slots ,
+          /*Num slots temp_num_slots*/ (uint8_t)temp_num_slots,
 
           /*Slot time in MS: 1100*/ 0x4C,
           0x04,
@@ -137,7 +136,7 @@ private:
 
           /*GetFirmwareType*/ 0x1F,
           /*GetDisplaySize*/ 0x1A,
-      };
+          /*DeleteAllImages*/ 0xA1, 0x01, 0xff};
 
       set_trans_buffer(temp_buffer, sizeof(temp_buffer));
 
