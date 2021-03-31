@@ -75,7 +75,7 @@ private:
       uint8_t temp_network_id = get_network_id();
       uint16_t temp_display_id = get_display_id();
       uint8_t temp_num_slots = get_num_slots() + 1;
-      uint8_t temp_display_slot = temp_num_slots & temp_display_id;
+      uint8_t temp_display_slot = get_num_slots() & temp_display_id;
 
       save_current_settings();
 
@@ -139,6 +139,13 @@ private:
           /*DeleteAllImages*/ 0xA1, 0x01, 0xff};
 
       set_trans_buffer(temp_buffer, sizeof(temp_buffer));
+
+      printf("Wun Activation bytes:");
+      for (int i = 0; i < sizeof(temp_buffer); i++)
+      {
+        printf(" 0x%02x", temp_buffer[i]);
+      }
+      printf("\r\n");
 
       set_is_data_waiting(true);
       set_trans_mode(1);
