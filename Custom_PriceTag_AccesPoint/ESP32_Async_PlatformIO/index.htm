@@ -19,6 +19,9 @@
   <input type="text" id="disp_id" name="disp_id" value="123">
   <button onclick='senden("activate_display?serial="+document.getElementById("serial").value+"&id="+document.getElementById("disp_id").value)'>Activate new display</button>
   <button onclick='senden("get_last_activation")'>Get activation status</button>
+  <label for="serial">Used wakeup channel:</label>
+  <button onclick='senden("set_wu_channel?freq=4")'>EU</button>
+  <button onclick='senden("set_wu_channel?freq=35")'>US</button>
   <br><br>
   </div>
   
