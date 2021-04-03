@@ -363,6 +363,11 @@ void init_web()
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.htm");
 
   server.onNotFound([](AsyncWebServerRequest *request) {
+    if (request->url() == "/" || request->url() == "index.htm")
+    { // not uploaded the index.htm till now so notify the user about it
+      request->send(200, "text/html", "please use <a href=\"/edit\">/edit</a> with login defined in wlan.h to uplaod the suplied index.htm to get full useage");
+      return;
+    }
     Serial.printf("NOT_FOUND: ");
     if (request->method() == HTTP_GET)
       Serial.printf("GET");
