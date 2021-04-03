@@ -91,7 +91,6 @@ void init_web()
       }
       filename = request->getParam("file")->value();
 
-      set_display_id(id);
       if (request->hasParam("file1"))
         filename_color = request->getParam("file1")->value();
 
@@ -99,6 +98,7 @@ void init_web()
 
       if (iCompressedLen)
       {
+        set_display_id(id);
         set_is_data_waiting(true);
         request->send(200, "text/plain", "OK cmd to display " + String(id) + " File: " + filename + " Len: " + String(iCompressedLen));
       }
@@ -264,7 +264,7 @@ void init_web()
       break;
     }
 
-    request->send(200, "text/plain", "Activation " + acti_status + " NetID " + String(get_network_id()) + " freq " + String(get_freq()) + " slot " + String(get_slot_address()) + " bytes left: " + String(get_still_to_send()) + " Open: " + String(get_trans_file_open()) + " is waiting: " + String(get_is_data_waiting_raw())+ "<br>mode " + get_mode_string() );
+    request->send(200, "text/plain", "Activation " + acti_status + " NetID " + String(get_network_id()) + " freq " + String(get_freq()) + " slot " + String(get_slot_address()) + " bytes left: " + String(get_still_to_send()) + " Open: " + String(get_trans_file_open()) + " is waiting: " + String(get_is_data_waiting_raw()) + "<br>mode " + get_mode_string());
   });
 
   server.on("/set_mode", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -324,9 +324,9 @@ void init_web()
     deleteFile("/");
   });
 
-  server.on("/get_settings", HTTP_GET, [](AsyncWebServerRequest *request) {    
-    request->send(200, "text/plain", "SETTINGS:CHANNEL:"+String(get_freq())+":NET_ID:"+ String(get_network_id())+":SLOTS:"+String(get_num_slots() + 1)+":FREQ_OFFSET:"+String(get_freq_offset()));
-   });
+  server.on("/get_settings", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "SETTINGS:CHANNEL:" + String(get_freq()) + ":NET_ID:" + String(get_network_id()) + ":SLOTS:" + String(get_num_slots() + 1) + ":FREQ_OFFSET:" + String(get_freq_offset()));
+  });
 
   server.on("/save_settings", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", "OK saving settings");

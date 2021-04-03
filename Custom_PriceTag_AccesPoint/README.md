@@ -22,7 +22,6 @@ This project is set up to use PlatformIO but it should also be possible to compi
 
 Testing shows the "green" CC1101 868 MHz modules have out-of-spec oscillators. The calibration registers can be used to compensate for this using the "Set base freq offset" of the web interface. Offsets of 15-17 have been shown to work well for these boards. If you cannot communicate with your displays, set this value and try again.
 
-
 ## Image Formats
 
 The supported pictures must be monochrome .bmp, one image for each color in the case of multi-color diplays like the Chroma74. Images must have the same resolution and aspect ratio (landscape/portrait) for the target digital price tag or the display will not be updated even if the transmission is successful.
@@ -46,3 +45,9 @@ The supported pictures must be monochrome .bmp, one image for each color in the 
   * Enter the filename in the "Filename:" box
   * Click "Send .bmp"
   * If you receive TX Timeout, check the ID or try adjusting the freq offset.
+
+## TODO list
+- Handling the ACK received from the display better, now it only compares the exprected one to the received one and resends all blocks but only needs to send the missed parts again. also parts with len of 1-7 go into a resend loop as not handled correctly if not received full on first send.
+- Get a better Recover method, now its very manual to get a missconfigured displays back in business
+- create a database with all activated displays with its type and IDs to make automatic sending of dynamic data simpler
+- Implement Larrys dynamic oneBitLibrary fully into the system
