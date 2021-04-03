@@ -32,7 +32,7 @@ The supported pictures must be monochrome .bmp, one image for each color in the 
 ## Example Workflow
 
 * Convert a sample image using the following ImageMagick command that forces 1-bit color, rotates, crops, and sizes for EPOP900 display:
-  * `convert input.png -rotate 180 -resize "360x480^" -crop 360x480+0+0 -colors 2 -dither FloydSteinberg epop900demo.bmp`
+  * `convert input.png -rotate 180 -resize "360x480^" -crop 360x480+0+0 -colorspace Gray -colors 2 -dither FloydSteinberg -type bilevel epop900demo.bmp`
 * Upload the demo image to the ESP32 using the *ip*/edit page
 * Activate new display using the web interface at the IP address of the ESP32:
   * Enter the display serial number, chose any ID number like, and click "Activate new display"
