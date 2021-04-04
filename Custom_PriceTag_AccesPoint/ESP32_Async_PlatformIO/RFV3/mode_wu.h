@@ -14,14 +14,14 @@ public:
 
     if (millis() - wakeup_start_time > 17000)
     {
-      log_main("Something wrong, back to idle");
+      log("Something wrong, back to idle");
       set_mode_idle();
     }
   }
 
   virtual void pre()
   {
-    log_main(mode_name);
+    log(mode_name);
     wakeup_start_time = millis();
 
     memset(tx_wu_buffer, 0xff, 10);
@@ -65,7 +65,7 @@ private:
   {
     if (millis() - wakeup_start_time > 16000)
     {
-      log_main("WAKEUP done");
+      log("WAKEUP done");
       set_mode_full_sync();
     }
     else

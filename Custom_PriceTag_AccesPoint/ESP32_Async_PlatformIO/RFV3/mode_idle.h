@@ -22,7 +22,7 @@ class ModeIdle : public mode_class
 
     virtual void pre()
     {
-      log_main(mode_name);
+      log(mode_name);
 
     }
 

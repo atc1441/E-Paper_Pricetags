@@ -2,7 +2,6 @@
 #include <SPI.h>
 #include "RFV3.h"
 #include "main_variables.h"
-#include "logger.h"
 #include "cc1101_spi.h"
 #include "cc1101.h"
 #include "class.h"
@@ -63,12 +62,12 @@ void init_web()
       id = request->getParam("id")->value().toInt();
       filename = request->getParam("file")->value();
 
-      set_display_id(id);
-
       int size = set_trans_file("/" + filename);
       if (size)
       {
+        set_display_id(id);
         set_is_data_waiting(true);
+        set_last_send_status(1);
       }
       request->send(200, "text/plain", "OK cmd to display " + String(id) + " File: " + filename + " Len: " + String(size));
       return;
@@ -100,6 +99,7 @@ void init_web()
       {
         set_display_id(id);
         set_is_data_waiting(true);
+        set_last_send_status(1);
         request->send(200, "text/plain", "OK cmd to display " + String(id) + " File: " + filename + " Len: " + String(iCompressedLen));
       }
       else
@@ -119,12 +119,13 @@ void init_web()
       id = request->getParam("id")->value().toInt();
       cmd = request->getParam("cmd")->value();
       int cmd_len = cmd.length() / 2;
-      set_display_id(id);
 
       uint8_t temp_buffer[cmd_len + 1];
       hexCharacterStringToBytes(temp_buffer, cmd);
       set_trans_buffer(temp_buffer, cmd_len);
       set_is_data_waiting(true);
+      set_display_id(id);
+      set_last_send_status(1);
       request->send(200, "text/plain", "OK cmd to display " + String(id) + " " + cmd + " Len: " + String(cmd_len));
       return;
     }
@@ -220,31 +221,9 @@ void init_web()
     request->send(200, "text/plain", "Wrong parameter");
   });
 
-  server.on("/get_last_activation", HTTP_GET, [](AsyncWebServerRequest *request) {
-    String acti_status = "";
-    switch (get_last_activation_status())
-    {
-    case 0:
-      acti_status = "not started";
-      break;
-    case 1:
-      acti_status = "started";
-      break;
-    case 2:
-      acti_status = "timeout";
-      break;
-    case 3:
-      acti_status = "successful";
-      break;
-    default:
-      acti_status = "Error";
-      break;
-    }
-    request->send(200, "text/plain", "Last activation " + acti_status);
-  });
-
   server.on("/get_mode", HTTP_GET, [](AsyncWebServerRequest *request) {
     String acti_status = "";
+    String send_status = "";
     switch (get_last_activation_status())
     {
     case 0:
@@ -263,8 +242,26 @@ void init_web()
       acti_status = "Error";
       break;
     }
+    switch (get_last_send_status())
+    {
+    case 0:
+      send_status = "nothing send";
+      break;
+    case 1:
+      send_status = "in sending";
+      break;
+    case 2:
+      send_status = "timeout";
+      break;
+    case 3:
+      send_status = "successful";
+      break;
+    default:
+      send_status = "Error";
+      break;
+    }
 
-    request->send(200, "text/plain", "Activation " + acti_status + " NetID " + String(get_network_id()) + " freq " + String(get_freq()) + " slot " + String(get_slot_address()) + " bytes left: " + String(get_still_to_send()) + " Open: " + String(get_trans_file_open()) + " is waiting: " + String(get_is_data_waiting_raw()) + "<br>mode " + get_mode_string());
+    request->send(200, "text/plain", "Send: " + send_status + " , Activation: " + acti_status + " NetID " + String(get_network_id()) + " freq " + String(get_freq()) + " slot " + String(get_slot_address()) + " bytes left: " + String(get_still_to_send()) + " Open: " + String(get_trans_file_open()) + " is waiting: " + String(get_is_data_waiting_raw()) + "<br>mode " + get_mode_string());
   });
 
   server.on("/set_mode", HTTP_GET, [](AsyncWebServerRequest *request) {

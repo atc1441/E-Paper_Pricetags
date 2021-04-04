@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <SPI.h>
-#include "logger.h"
 #include "main_variables.h"
 #include "cc1101_spi.h"
 #include "cc1101.h"
@@ -180,6 +179,17 @@ int get_last_activation_status()
 void set_last_activation_status(int state)
 {
   last_activation_status = state;
+}
+
+int last_send_status = 0;
+int get_last_send_status()
+{
+  return last_send_status;
+}
+
+void set_last_send_status(int state)
+{
+  last_send_status = state;
 }
 
 /* New Activation mode */

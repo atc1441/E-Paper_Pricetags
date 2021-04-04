@@ -36,6 +36,7 @@ public:
       else
       {
         set_mode_idle();
+        set_last_send_status(3);
       }
       break;
     }
@@ -43,17 +44,17 @@ public:
 
   virtual void new_interval()
   {
-    log_main("to long, back to idle");
+    log("to long, back to idle");
     set_mode_idle();
   }
 
   virtual void pre()
   {
-    log_main(mode_name);
+    log(mode_name);
     if (get_last_to_short())
     {
       set_last_to_short(false);
-      log_main("Last one was to short so continue");
+      log("Last one was to short so continue");
     }
     else
     {
@@ -86,7 +87,7 @@ public:
     {
     case 0: //Handle new beginning
       time_left = 1100 - (millis() - get_last_slot_time());
-      log_main("TIME LEFT: " + String(time_left));
+      log("TIME LEFT: " + String(time_left));
       if (time_left < 250)
       {
         set_last_to_short(true);
@@ -110,7 +111,7 @@ public:
     case 3: //Waiting for RX data here
       if (millis() - rx_start_time >= get_rx_timeout())
       {
-        log_main("RX_TIMEOUT!!!");
+        log("RX_TIMEOUT!!!");
         timeout_counter++;
         if (timeout_counter > (get_trans_mode() ? 80 : 30))
         {
@@ -120,6 +121,7 @@ public:
             set_trans_mode(0);
             restore_current_settings();
           }
+          set_last_send_status(2);
           set_is_data_waiting(false);
           cc1101_idle();
           set_mode_idle();
@@ -173,7 +175,7 @@ private:
 
   void tx_data_main()
   {
-    log_normal("TX data main");
+    log("TX data main");
     int curr_packet_len = 0;
 
     memset(tx_data_buffer_int, 0x00, 62);

@@ -3,7 +3,6 @@
 #include <SPI.h>
 #include "RFV3.h"
 #include "main_variables.h"
-#include "logger.h"
 #include "cc1101_spi.h"
 #include "cc1101.h"
 #include "class.h"
@@ -20,11 +19,14 @@
 #include "trans_assist.h"
 
 #define CLK_PIN 18
-#define MOSI_PIN 23
-#define MISO_PIN 19
+#define MOSI_PIN 19//23
+#define MISO_PIN 23//19
 #define SS_PIN 5
 
 #define GDO2 4
+
+void init_log();
+void log(String message);
 
 void set_mode_idle();
 void set_mode_sync();

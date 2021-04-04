@@ -14,13 +14,13 @@ public:
 
   virtual void new_interval()
   {
-    log_main("something wrong, back to idle");
+    log("something wrong, back to idle");
     set_mode_idle();
   }
 
   virtual void pre()
   {
-    log_main(mode_name);
+    log(mode_name);
 
     memset(tx_sync_buffer, 0x00, 7);
     tx_sync_buffer[0] = get_network_id();
@@ -68,7 +68,7 @@ private:
   {
     if (tx_sync_buffer[1] == short_sync_end)
     {
-      log_normal("short SYNC done");
+      log("short SYNC done");
       cc1101_idle();
       if (check_trans_mode_last())
       {

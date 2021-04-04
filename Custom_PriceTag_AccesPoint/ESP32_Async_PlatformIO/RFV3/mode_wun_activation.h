@@ -19,7 +19,7 @@ public:
 
   virtual void pre()
   {
-    log_main(mode_name);
+    log(mode_name);
     set_last_activation_status(1);
 
     wakeup_start_time = millis();

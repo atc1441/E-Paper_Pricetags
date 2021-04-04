@@ -2,16 +2,15 @@
 #include <SPI.h>
 #include "RFV3.h"
 #include "cc1101_spi.h"
-#include "logger.h"
 
 SPIClass * vspi = NULL;
 
 void init_spi() {
-  log_verbose("SPI init"); 
+  log("SPI init"); 
   pinMode(SS_PIN, OUTPUT);
   vspi = new SPIClass(VSPI);
   vspi->begin(CLK_PIN,MISO_PIN,MOSI_PIN);
-  log_verbose("SPI init done"); 
+  log("SPI init done"); 
 }
 
 void spi_start() {

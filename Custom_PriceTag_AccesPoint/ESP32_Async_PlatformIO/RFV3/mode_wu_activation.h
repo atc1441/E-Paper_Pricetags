@@ -15,7 +15,7 @@ public:
 
   virtual void pre()
   {
-    log_main(mode_name);
+    log(mode_name);
     set_last_activation_status(1);
     last_wu_act = false;
     wakeup_start_time = millis();
@@ -66,7 +66,7 @@ private:
   {
     if (millis() - wakeup_start_time > 15500)
     {
-      log_main("WAKEUP Activation done");
+      log("WAKEUP Activation done");
       set_mode_activation();
     }
     else

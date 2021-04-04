@@ -1,6 +1,5 @@
 #pragma once
 
-
 uint8_t get_num_slots();
 void set_num_slot(uint8_t slots);
 void set_wu_channel(uint8_t channel);
@@ -30,6 +29,8 @@ int get_rx_timeout();
 
 int get_last_activation_status();
 void set_last_activation_status(int state);
+int get_last_send_status();
+void set_last_send_status(int state);
 
 /* NEW MODE */
 void set_trans_mode(int state);

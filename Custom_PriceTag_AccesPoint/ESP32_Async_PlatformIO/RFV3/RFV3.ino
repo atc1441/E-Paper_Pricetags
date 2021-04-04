@@ -2,7 +2,6 @@
 #include <SPI.h>
 #include "RFV3.h"
 #include "main_variables.h"
-#include "logger.h"
 #include "cc1101_spi.h"
 #include "cc1101.h"
 #include "class.h"
@@ -37,10 +36,21 @@ void IRAM_ATTR GDO2_interrupt()
 
 void init_interrupt()
 {
-  log_verbose("GDO2 interrupt init");
+  log("GDO2 interrupt init");
   pinMode(GDO2, INPUT);
   attachInterrupt(GDO2, GDO2_interrupt, FALLING);
-  log_verbose("GDO2 interrupt init done");
+  log("GDO2 interrupt init done");
+}
+
+void init_log() {
+  Serial.begin(500000);
+  Serial.printf("\n\n");
+  Serial.setDebugOutput(true);
+}
+
+void log(String message) {
+  Serial.print(millis());
+  Serial.println(" : " + message);
 }
 
 void setup()
@@ -77,19 +87,19 @@ void loop()
   {
     currentMode->post();
     currentMode = tempMode;
-    log_main("Mode changed to " + currentMode->get_name());
+    log("Mode changed to " + currentMode->get_name());
     currentMode->pre();
   }
   currentMode->main();
   if (check_new_interval())
   {
-    log_main("Count: " + String(interrupt_counter));
+    log("Count: " + String(interrupt_counter));
     if (interrupt_counter == 0)
     {
       if (no_count_counter++ > 5)
       {
         no_count_counter = 0;
-        log_main("no interrupts anymore, something is broken, trying to fix it now");
+        log("no interrupts anymore, something is broken, trying to fix it now");
         if (get_trans_mode())
         {
           set_trans_mode(0);

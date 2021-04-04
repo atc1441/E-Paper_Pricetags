@@ -2,7 +2,6 @@
 #include <SPI.h>
 #include "RFV3.h"
 #include "main_variables.h"
-#include "logger.h"
 #include "cc1101_spi.h"
 #include "cc1101.h"
 #include "class.h"

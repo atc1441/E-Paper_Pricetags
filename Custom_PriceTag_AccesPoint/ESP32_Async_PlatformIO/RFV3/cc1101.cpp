@@ -2,7 +2,6 @@
 #include "RFV3.h"
 #include "cc1101_spi.h"
 #include "cc1101.h"
-#include "logger.h"
 #include "main_variables.h"
 
 uint8_t cc1101_frequency_list[73 * 3] = {
@@ -31,7 +30,7 @@ int curr_net_id = -1;
 
 uint8_t init_radio()
 {
-  log_verbose("Radio init");
+  log("Radio init");
   digitalWrite(SS_PIN, LOW);
   delayMicroseconds(10);
   digitalWrite(SS_PIN, HIGH);
@@ -40,7 +39,7 @@ uint8_t init_radio()
   delay(10);
 
   uint8_t version_cc1101 = spi_read_register(CC1101_STATUS_VERSION);
-  log_verbose("Radio version: " + String(version_cc1101));
+  log("Radio version: " + String(version_cc1101));
   if (version_cc1101 == 0x00 || version_cc1101 == 0xFF)
   {
     return 1;
@@ -111,7 +110,7 @@ void CC1101_set_freq(uint8_t freq)
   uint8_t *s = (uint8_t *)&cc1101_frequency_list[(3 * freq)];
   if (freq >= 73)
   {
-    log_normal("ERROR: Freq too high " + String(freq));
+    log("ERROR: Freq too high " + String(freq));
     return;
   }
   if (curr_freq != freq)
@@ -122,7 +121,7 @@ void CC1101_set_freq(uint8_t freq)
     spi_write_register(CC1101_REG_FREQ0, s[2]);
     uint32_t IF = (s[0] << 16) + (s[1] << 8) + s[2]; // 24-bit value
     float f = (26000000.0f / 65536.0f) * (float)(IF);
-    log_verbose("Radio set to base freq: (F=" + String(freq) + ") " + String(f / 1000000.0f) + " Mhz ");
+    log("Radio set to base freq: (F=" + String(freq) + ") " + String(f / 1000000.0f) + " Mhz ");
   }
 }
 
@@ -131,7 +130,7 @@ void CC1101_set_freq_offset(uint8_t freq_offset)
 {
   _freq_offset = freq_offset;
   spi_write_register(CC1101_REG_FSCTRL0, freq_offset);
-  log_verbose("Radio base freq offset: " + String(freq_offset));
+  log("Radio base freq offset: " + String(freq_offset));
 }
 
 uint8_t get_freq_offset()
@@ -145,7 +144,7 @@ void CC1101_set_net_id(uint8_t id)
   {
     curr_net_id = id;
     spi_write_register(CC1101_REG_ADDR, id);
-    log_verbose("Radio set id done " + String(id));
+    log("Radio set id done " + String(id));
   }
 }
 
@@ -268,7 +267,7 @@ int cc1101_read_fifo(uint8_t buffer[])
     spi_read_burst(0x3F, buffer, fifo_len + 1);
     uint8_t rssi = buffer[fifo_len - 1];
     uint8_t lqi = buffer[fifo_len];
-    log_normal("RSSI: " + String(rssi) + " LQI: " + String(lqi & 0x7F));
+    log("RSSI: " + String(rssi) + " LQI: " + String(lqi & 0x7F));
     return fifo_len - 1;
   }
   return -1;

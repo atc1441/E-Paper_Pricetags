@@ -2,7 +2,6 @@
 #include <SPI.h>
 #include "RFV3.h"
 #include "main_variables.h"
-#include "logger.h"
 #include "cc1101_spi.h"
 #include "cc1101.h"
 #include "class.h"
@@ -27,7 +26,8 @@ int compressImageRLE(uint8_t *pData, int iOffset, int iLen)
   pBitmap = &pData[iOffset];
   pOut = pData; // overwrite the input HTML data with the compressed data
 
-  if (pBitmap[0] != 'B' || pBitmap[1] != 'M' || pBitmap[14] < 0x28) {
+  if (pBitmap[0] != 'B' || pBitmap[1] != 'M' || pBitmap[14] < 0x28)
+  {
     free(pTemp);
     Serial.println("Not a Windows BMP file!\n");
     return 0;
@@ -58,14 +58,16 @@ int compressImageRLE(uint8_t *pData, int iOffset, int iLen)
     else
       s = &pBitmap[offset + (height - 1 - y) * pitch];
     memcpy(d, s, bsize);
-    for (x = 0; x < bsize; x++) {
+    for (x = 0; x < bsize; x++)
+    {
       u16Check += s[x]; // calculate checksum of uncompressed pixels
     }
     d += bsize;
   }
   Serial.println("Copied image to temp buffer");
   // Prepare the output data
-  pOut[0] = 0x83; pOut[1] = 0x19;
+  pOut[0] = 0x83;
+  pOut[1] = 0x19;
   pOut[2] = 0;
   pOut[3] = (uint8_t)width;
   pOut[4] = (uint8_t)(width >> 8);
@@ -116,13 +118,13 @@ int compressImageRLE(uint8_t *pData, int iOffset, int iLen)
       *d++ = cOld;
     }
     pStart = s;
-encpb1:
+  encpb1:
     /* Find # of consec non-repeats */
     if (s == pEnd) /* Done with the data? */
       break;
     /* Count non-repeats */
     cOld = *s++; /* Get the compare byte */
-    iCount = 1; /* Assume 1 non-repeat to start */
+    iCount = 1;  /* Assume 1 non-repeat to start */
     while (s < pEnd)
     {
       c = *s++;
@@ -189,3 +191,94 @@ encpb1:
   free(pTemp);
   return iSize;
 } /* compressImageRLE() */
+
+//
+// Compress contiguous image data as RLE
+// returns the compressed data length
+//
+int compressBufferRLE(uint8_t *pIn, int iSize, uint8_t *pOut)
+{
+  int iCount;
+  uint8_t cOld, *pEnd, *pStart, c, *s, *d;
+  // Compress the data
+  iCount = 1;
+  pStart = s = pIn;
+  cOld = *s++;
+  d = pOut;
+  pEnd = &pIn[iSize];
+  while (s < pEnd)
+  {
+    c = *s++;
+    if (c == cOld)
+    {
+      iCount++;
+      continue;
+    }
+    // count consecutive non-repeats
+    if (iCount == 1) /* Any repeats? */
+    {
+      s = pStart;
+      goto encpb1; /* Look for consecutive, non-repeats */
+    }
+    s--; // back up over the non-repeating byte
+    while (iCount > 126)
+    {
+      *d++ = 0xff; /* Store max count */
+      *d++ = cOld; /* Store the repeating byte */
+      iCount -= 127;
+    }
+    if (iCount) /* any remaining count? */
+    {
+      *d++ = (unsigned char)(iCount | 0x80);
+      *d++ = cOld;
+    }
+    pStart = s;
+  encpb1:
+    /* Find # of consec non-repeats */
+    if (s == pEnd) /* Done with the data? */
+      break;
+    /* Count non-repeats */
+    cOld = *s++; /* Get the compare byte */
+    iCount = 1;  /* Assume 1 non-repeat to start */
+    while (s < pEnd)
+    {
+      c = *s++;
+      if (c == cOld)
+        break;
+      cOld = c;
+      iCount++;
+    }
+    iCount--;
+    s--;
+    // encode non-repeats
+    while (iCount > 127)
+    {
+      *d++ = 127;
+      memcpy(d, pStart, 127);
+      d += 127;
+      pStart += 127;
+      iCount -= 127;
+    }
+    if (iCount)
+    {
+      *d++ = (uint8_t)iCount;
+      memcpy(d, pStart, iCount);
+      d += iCount;
+      pStart += iCount;
+    }
+    iCount = 1;
+  } // while encoding
+  // finish storing last repeat
+  while (iCount > 126)
+  {
+    *d++ = 0xff; /* Store max count */
+    *d++ = cOld; /* Store the repeating byte */
+    iCount -= 127;
+  }
+  if (iCount) /* any remaining count? */
+  {
+    *d++ = (unsigned char)(iCount | 0x80);
+    *d++ = cOld;
+  }
+  return (int)(d - pOut);
+} /* compressBufferRLE() */

@@ -40,7 +40,7 @@ public:
 
   virtual void pre()
   {
-    log_main(mode_name);
+    log(mode_name);
     activation_position = 0;
     is_in_tx = true;
     packet_counter = 0x80;
@@ -56,13 +56,13 @@ public:
       {
         if (rx_timeout_counter >= 10)
         {
-          log_main("no connection possible, exit activation");
+          log("no connection possible, exit activation");
           cc1101_idle();
           set_mode_idle();
           set_last_activation_status(2);
           return;
         }
-        log_main("RX Timeout retry");
+        log("RX Timeout retry");
         rx_timeout_counter++;
         activation_handler();
       }

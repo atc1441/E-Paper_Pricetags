@@ -1,7 +1,6 @@
 #include "trans_assist.h"
 #include <Arduino.h>
 #include <SPI.h>
-#include "logger.h"
 #include "main_variables.h"
 #include "cc1101_spi.h"
 #include "cc1101.h"

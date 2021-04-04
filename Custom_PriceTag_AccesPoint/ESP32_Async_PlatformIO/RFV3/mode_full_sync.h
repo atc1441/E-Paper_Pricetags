@@ -19,7 +19,7 @@ public:
 
   virtual void pre()
   {
-    log_main(mode_name);
+    log(mode_name);
     fully_sync_start_time = millis();
     full_sync_counter = ((get_num_slots() + 1) * 2) - 1;
   }
@@ -69,7 +69,7 @@ private:
   {
     if (tx_sync_buffer[1] == full_sync_end)
     {
-      log_normal("full SYNC done");
+      log("full SYNC done");
       cc1101_idle();
       full_sync_counter--;
       if (full_sync_counter < 0 && (millis() - fully_sync_start_time) >= 16000)

@@ -1,7 +1,7 @@
 #include <Arduino.h>
+#include "RFV3.h"
 #include "interval_timer.h"
 #include "main_variables.h"
-#include "logger.h"
 
 /*Timer Stuff*/
 hw_timer_t *timer = NULL;
@@ -22,13 +22,13 @@ void IRAM_ATTR interval_timer()
 
 void init_timer()
 {
-  log_verbose("Interval timer init");
+  log("Interval timer init");
   timerSemaphore = xSemaphoreCreateBinary();
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &interval_timer, true);
   timerAlarmWrite(timer, 1100000, true);
   timerAlarmEnable(timer);
-  log_verbose("Interval timer done");
+  log("Interval timer done");
 }
 
 bool check_new_interval()
