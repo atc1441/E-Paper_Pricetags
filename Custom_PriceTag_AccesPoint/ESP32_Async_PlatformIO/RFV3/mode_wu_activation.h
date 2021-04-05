@@ -6,40 +6,23 @@ class ModeWuAct : public mode_class
 public:
   virtual void interrupt()
   {
-    wakeup();
+    if (handle_wu())
+    {
+      log(mode_name + " done");
+      set_mode_activation();
+    }
   }
 
   virtual void new_interval()
   {
+    check_wu_timeout();
   }
 
   virtual void pre()
   {
     log(mode_name);
     set_last_activation_status(1);
-    last_wu_act = false;
-    wakeup_start_time = millis();
-
-    memset(tx_wu_buffer, 0xff, 10);
-    tx_wu_buffer[0] = 0x00;
-    tx_wu_buffer[7] = get_freq() + 1;
-    tx_wu_buffer[8] = 0x00;
-    tx_wu_buffer[9] = get_network_id();
-
-    uint8_t serial[6];
-    get_serial(serial);
-    memcpy(&tx_wu_buffer[1], serial, 6);
-
-    printf("Wu Activation:");
-    for (int i = 0; i < 9; i++)
-    {
-      printf(" 0x%02x", tx_wu_buffer[i]);
-    }
-    printf("\r\n");
-
-    cc1101_prepaire_tx(get_wu_channel(), 0);
-    wakeup();
-    cc1101_tx();
+    start_wu(WU_ACTIVATION_CMD);
   }
 
   virtual void main()
@@ -57,23 +40,6 @@ public:
 
 private:
   String mode_name = "Wakeup Activation";
-
-  long wakeup_start_time;
-  uint8_t tx_wu_buffer[10];
-  bool last_wu_act = true;
-
-  void wakeup()
-  {
-    if (millis() - wakeup_start_time > 15500)
-    {
-      log("WAKEUP Activation done");
-      set_mode_activation();
-    }
-    else
-    {
-      cc1101_tx_fill(tx_wu_buffer, 10);
-    }
-  }
 };
 
 ModeWuAct modeWuAct;

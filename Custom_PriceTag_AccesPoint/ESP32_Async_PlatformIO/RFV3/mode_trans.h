@@ -300,13 +300,7 @@ private:
       multi_tx = false;
     }
 
-    Serial.print(" Data to send: ");
-    for (int i = 0; i < (id_offset + 6 + 10 /*curr_packet_len*/); i++)
-    {
-      Serial.print(" 0x");
-      Serial.print(tx_data_buffer_int[i], HEX);
-    }
-    Serial.println();
+    print_buffer(tx_data_buffer_int, id_offset + 6 + 10 /*curr_packet_len*/);
   }
 
   void set_rx_enable(bool state)
@@ -372,14 +366,7 @@ private:
       return false;
     }
 
-    Serial.print(" Read_len:" + String(read_len));
-    Serial.print(" Data:");
-    for (int i = 0; i < read_len; i++)
-    {
-      Serial.print(" 0x");
-      Serial.print(data_array[i], HEX);
-    }
-    Serial.println();
+    print_buffer(data_array, read_len);
 
     uint16_t ack_in = data_array[7 + id_offset] | (data_array[6 + id_offset] << 8);
 

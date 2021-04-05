@@ -34,12 +34,7 @@ public:
       tx_sync_buffer[4] = get_display_id() & 0xff;
     } // buffer 5 and 6 is a slot for a second display to contact but not used here
 
-    printf("Sync:");
-    for (int i = 0; i < 6; i++)
-    {
-      printf(" 0x%02x", tx_sync_buffer[i]);
-    }
-    printf("\r\n");
+    print_buffer(tx_sync_buffer, sizeof(tx_sync_buffer));
 
     cc1101_prepaire_tx(get_freq(), get_network_id());
     short_sync();

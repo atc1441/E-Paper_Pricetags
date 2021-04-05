@@ -261,7 +261,7 @@ void init_web()
       break;
     }
 
-    request->send(200, "text/plain", "Send: " + send_status + " , Activation: " + acti_status + " NetID " + String(get_network_id()) + " freq " + String(get_freq()) + " slot " + String(get_slot_address()) + " bytes left: " + String(get_still_to_send()) + " Open: " + String(get_trans_file_open()) + " is waiting: " + String(get_is_data_waiting_raw()) + "<br>mode " + get_mode_string());
+    request->send(200, "text/plain", "Send: " + send_status + " , Activation: " + acti_status + " NetID " + String(get_network_id()) + " freq " + String(get_freq()) + " slot " + String(get_slot_address()) + " bytes left: " + String(get_still_to_send()) + " Open: " + String(get_trans_file_open()) + " is waiting: " + String(get_is_data_waiting_raw()) + "<br>last answer: " + get_last_receive_string()+ "<br>mode " + get_mode_string());
   });
 
   server.on("/set_mode", HTTP_GET, [](AsyncWebServerRequest *request) {

@@ -188,12 +188,7 @@ private:
       break;
     }
 
-    printf("Activation:");
-    for (int i = 0; i < 15; i++)
-    {
-      printf(" 0x%02x", tx_act_buffer[i]);
-    }
-    printf("\r\n");
+    print_buffer(tx_act_buffer, sizeof(tx_act_buffer));
 
     cc1101_tx_fill(tx_act_buffer, 16);
     cc1101_tx();
@@ -212,7 +207,7 @@ private:
       return false;
     }
 
-    printf("Read_len: %d Data:",read_len);
+    printf("Read_len: %d Data:", read_len);
     for (int i = 0; i < read_len; i++)
     {
       printf(" 0x%02x", data_array[i]);

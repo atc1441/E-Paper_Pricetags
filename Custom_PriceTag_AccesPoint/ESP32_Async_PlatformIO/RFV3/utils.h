@@ -19,3 +19,5 @@
 byte nibble(char c);
 void hexCharacterStringToBytes(byte *byteArray, String hexString);
 void tohex(unsigned char * in, size_t insz, char * out, size_t outsz);
+
+void print_buffer(uint8_t *buffer, int len);

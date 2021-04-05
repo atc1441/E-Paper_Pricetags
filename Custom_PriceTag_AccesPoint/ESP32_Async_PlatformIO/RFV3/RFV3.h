@@ -17,15 +17,16 @@
 #include <SPIFFSEditor.h>
 #include "utils.h"
 #include "trans_assist.h"
+#include "wu_assist.h"
 
 #define CLK_PIN 18
-#define MOSI_PIN 19//23
-#define MISO_PIN 23//19
+#define MOSI_PIN 23
+#define MISO_PIN 19
 #define SS_PIN 5
 
+#define GDO0 4
 #define GDO2 4
 
-void init_log();
 void log(String message);
 
 void set_mode_idle();

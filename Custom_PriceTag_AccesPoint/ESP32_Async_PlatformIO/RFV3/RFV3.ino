@@ -19,7 +19,12 @@
 #include "mode_wu_activation.h"
 #include "mode_wun_activation.h"
 #include "mode_activation.h"
-#include "mode_placeholder.h"
+
+class ModePlaceholder : public mode_class
+{
+};
+
+ModePlaceholder modePlaceholder;
 
 mode_class *currentMode = &modePlaceholder;
 mode_class *tempMode = &modeIdle;
@@ -36,26 +41,20 @@ void IRAM_ATTR GDO2_interrupt()
 
 void init_interrupt()
 {
-  log("GDO2 interrupt init");
   pinMode(GDO2, INPUT);
   attachInterrupt(GDO2, GDO2_interrupt, FALLING);
-  log("GDO2 interrupt init done");
 }
 
-void init_log() {
-  Serial.begin(500000);
-  Serial.printf("\n\n");
-  Serial.setDebugOutput(true);
-}
-
-void log(String message) {
+void log(String message)
+{
   Serial.print(millis());
   Serial.println(" : " + message);
 }
 
 void setup()
 {
-  init_log();
+  Serial.begin(500000);
+  Serial.setDebugOutput(true);
   SPIFFS.begin(true);
   init_spi();
   uint8_t radio_status = init_radio();

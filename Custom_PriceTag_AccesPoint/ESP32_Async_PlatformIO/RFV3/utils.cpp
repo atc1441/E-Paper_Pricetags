@@ -85,3 +85,12 @@ void tohex(unsigned char *in, size_t insz, char *out, size_t outsz)
   }
   pout[-1] = 0;
 }
+
+void print_buffer(uint8_t *buffer, int len){
+    printf("Len %d Data:", len);
+    for (int i = 0; i < len; i++)
+    {
+      printf(" 0x%02x", buffer[i]);
+    }
+    printf("\r\n");
+}

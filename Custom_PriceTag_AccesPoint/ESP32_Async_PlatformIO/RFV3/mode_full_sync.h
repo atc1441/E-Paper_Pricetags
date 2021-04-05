@@ -53,12 +53,7 @@ private:
     tx_sync_buffer[2] = get_slot_address();
     tx_sync_buffer[1] = full_sync_start;
 
-    printf("Full Sync:");
-    for (int i = 0; i < 6; i++)
-    {
-      printf(" 0x%02x", tx_sync_buffer[i]);
-    }
-    printf("\r\n");
+    print_buffer(tx_sync_buffer, sizeof(tx_sync_buffer));
 
     cc1101_prepaire_tx(get_freq(), 0);
     full_sync();
