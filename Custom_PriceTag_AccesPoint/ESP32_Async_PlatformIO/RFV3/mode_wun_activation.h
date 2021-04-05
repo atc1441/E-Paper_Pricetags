@@ -53,7 +53,6 @@ public:
 
       uint8_t serial[7];
       get_serial(serial);
-      set_display_id(serial[4] << 8 | serial[5]);
 
       save_current_settings();
 
@@ -65,7 +64,7 @@ public:
 
       print_buffer(temp_buffer, sizeof(temp_buffer));
 
-      set_is_data_waiting(true);
+      set_is_data_waiting(serial[4] << 8 | serial[5]);
       set_trans_mode(1);
       set_mode_full_sync();
     }

@@ -65,10 +65,6 @@ private:
     {
       log("short SYNC done");
       cc1101_idle();
-      if (check_trans_mode_last())
-      {
-        return;
-      }
       if (get_is_data_waiting())
         set_mode_trans();
       else

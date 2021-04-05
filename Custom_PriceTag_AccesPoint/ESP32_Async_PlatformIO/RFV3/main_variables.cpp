@@ -99,10 +99,17 @@ bool get_is_data_waiting_raw()
   return is_data_waiting;
 }
 
-void set_is_data_waiting(bool state)
+void set_is_data_waiting(uint16_t id)
 {
-  data_slot = num_slot & display_id;
-  is_data_waiting = state;
+  display_id = id;
+  data_slot = num_slot & id;
+  if(id){
+  set_last_send_status(1);
+  is_data_waiting = true;
+  }else{
+  set_last_send_status(0);
+  is_data_waiting = false;
+  }
 }
 
 void reset_full_sync_count()
@@ -219,29 +226,5 @@ void restore_current_settings()
   set_freq(temp_freq);
   set_network_id(temp_network_id);
   set_num_slot(temp_num_slots);
-}
-int trans_last_mode = 0;
-bool trans_wait_mode = 0;
-void set_trans_mode_last(int state)
-{
-  trans_wait_mode = 1;
-  trans_last_mode = state;
-}
-
-bool check_trans_mode_last()
-{
-  if (trans_wait_mode)
-  {
-    if (trans_last_mode <= 0)
-    {
-      trans_wait_mode = 0;
-      restore_current_settings();
-      reset_full_sync_count();
-      set_mode_wu();
-      return true;
-    }
-    trans_last_mode--;
-  }
-  return false;
 }
 /* END New Activation mode */

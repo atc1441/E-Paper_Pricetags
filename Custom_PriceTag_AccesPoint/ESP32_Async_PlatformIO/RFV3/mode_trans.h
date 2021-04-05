@@ -22,7 +22,7 @@ public:
       tx_data_main();
       break;
     case 50:
-      set_is_data_waiting(false);
+      set_is_data_waiting(0);
       cc1101_idle();
       tx_state = 52;
       save_receive_buffer();
@@ -31,7 +31,9 @@ public:
       {
         set_trans_mode(0);
         set_last_activation_status(3);
-        set_trans_mode_last(16);
+        restore_current_settings();
+        reset_full_sync_count();
+        set_mode_wu();
       }
       else
       {
@@ -53,7 +55,7 @@ public:
     log(mode_name);
     if (get_last_to_short())
     {
-      set_last_to_short(false);
+      set_last_to_short(0);
       log("Last one was to short so continue");
     }
     else
@@ -113,19 +115,7 @@ public:
       {
         log("RX_TIMEOUT!!!");
         timeout_counter++;
-        if (timeout_counter > (get_trans_mode() ? 80 : 30))
-        {
-          if (get_trans_mode())
-          {
-            set_last_activation_status(2);
-            set_trans_mode(0);
-            restore_current_settings();
-          }
-          set_last_send_status(2);
-          set_is_data_waiting(false);
-          cc1101_idle();
-          set_mode_idle();
-        }
+        check_timeout();
         tx_state = 0;
         curr_data_position = last_position_to_go_back;
         packet_counter = last_position_to_go_back_counter;
@@ -315,24 +305,19 @@ private:
     return temp_rx;
   }
 
-  bool check_ack(uint16_t ack_in, int counter, int len)
+  bool check_ack(uint16_t ack_in, int counter, int len, int send_parts)
   {
     // Check if the received ACK contains all send counter packets, this could be made better/faster by skipping received parts on next part TX but is left out for now
-    bool success = false;
 
-    if (len == 0)
-    {
-      printf("ACK len 0 %04x\r\n", ack_in);
-      return true;
-    }
+    int temp_ack_size = send_parts + 1;
+    if (temp_ack_size > 8)
+      temp_ack_size = 8;
 
-    len++; //add one because it was 0 based
-
-    int end_pos = counter + len;
+    int end_pos = counter + len + 1;
     if (end_pos > 16)
       end_pos -= 16;
 
-    int start_pos = end_pos - 8;
+    int start_pos = end_pos - temp_ack_size;
     if (start_pos < 0)
       start_pos = 16 + start_pos;
 
@@ -347,12 +332,25 @@ private:
         expected |= ((i >= end_pos) && (i < start_pos)) ? 0 : 1;
     }
 
-    printf("ACK: 0x%04x expected ACK: %04x state cont data: %d curr counter: %d\r\n", ack_in, expected, counter, len);
+    printf("state cont data: %d curr counter: %d ack_size %d\r\n", counter, len, temp_ack_size);
 
-    if (expected == ack_in)
-      success = true;
+    int bit = 0;
+    printf("Expected ACK ");
+    for (int i = 0; i < 16; i++)
+    {
+      bit = expected >> (15 - i) & 1;
+      printf("%d", bit);
+    }
+    printf("\r\n");
+    printf("Received ACK ");
+    for (int i = 0; i < 16; i++)
+    {
+      bit = ack_in >> (15 - i) & 1;
+      printf("%d", bit);
+    }
+    printf("\r\n");
 
-    return success;
+    return expected == ack_in;
   }
 
   bool read_data_cc1101()
@@ -370,10 +368,12 @@ private:
 
     uint16_t ack_in = data_array[7 + id_offset] | (data_array[6 + id_offset] << 8);
 
-    if (ack_cont_data && id_offset == 0 && !(check_ack(ack_in, last_position_to_go_back_counter, ack_cont_data)))
+    if (still_to_send && id_offset == 0 && !(check_ack(ack_in, last_position_to_go_back_counter, ack_cont_data, curr_data_position / max_cur_packet_len)))
     { //data was not fully received, will resend last parts
       curr_data_position = last_position_to_go_back;
       packet_counter = last_position_to_go_back_counter;
+      timeout_counter++;
+      check_timeout();
     }
     else
     {
@@ -386,6 +386,23 @@ private:
       display_more_than_one = !(data_array[4 + id_offset] & 0xf0); //Display wants more than one packet
     }
     return true;
+  }
+
+  void check_timeout()
+  {
+    if (timeout_counter > 30)
+    {
+      if (get_trans_mode())
+      {
+        set_last_activation_status(2);
+        set_trans_mode(0);
+        restore_current_settings();
+      }
+      set_is_data_waiting(false);
+      set_last_send_status(2);
+      cc1101_idle();
+      set_mode_idle();
+    }
   }
 };
 

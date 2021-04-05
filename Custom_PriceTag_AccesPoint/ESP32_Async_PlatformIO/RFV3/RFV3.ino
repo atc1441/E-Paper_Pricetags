@@ -23,7 +23,6 @@
 class ModePlaceholder : public mode_class
 {
 };
-
 ModePlaceholder modePlaceholder;
 
 mode_class *currentMode = &modePlaceholder;
