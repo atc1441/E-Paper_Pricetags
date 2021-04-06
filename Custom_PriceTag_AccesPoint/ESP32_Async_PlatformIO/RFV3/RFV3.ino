@@ -56,17 +56,14 @@ void setup()
   Serial.setDebugOutput(true);
   SPIFFS.begin(true);
   init_spi();
-  uint8_t radio_status = init_radio();
-  if (radio_status)
+  uint8_t radio_status;
+  while ((radio_status=init_radio()))
   {
-    while (1)
-    {
-      if (radio_status == 1)
-        Serial.println("Radio not working!!! ERROR");
-      if (radio_status == 2)
-        Serial.println("GPIO2 Interrupt input not working");
-      delay(1000);
-    }
+    if (radio_status == 1)
+      Serial.println("Radio not working!!! ERROR");
+    if (radio_status == 2)
+      Serial.println("GPIO2 Interrupt input not working");
+    delay(1000);
   }
   read_boot_settings();
   init_interrupt();
