@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<head>
+    <title>draw it!</title>
+    <style>
+        html {
+            background: white;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        section {
+            margin: 3em;
+        }
+
+        #draw>canvas {
+            display: block;
+            margin: 2em auto 0 auto;
+            border-radius: 10px;
+        }
+
+        #canvas {
+            border: 3px solid #555;
+            box-shadow: 10px 10px 0 black;
+            cursor: crosshair;
+            background: #dfdfdf;
+        }
+
+        #yellowCanvas {
+            border: 3px solid yellow;
+            margin: 1em;
+        }
+
+        #blackCanvas {
+            border: 3px solid black;
+            margin: 1em;
+        }
+
+        #bwImg {
+            border: 3px solid black;
+            margin: 1em;
+        }
+
+        #yelImg {
+            border: 3px solid yellow;
+            margin: 1em;
+        }
+
+        .nodebug #output,
+        .nodebug #temporary {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="nodebug" id="theBody">
+    <section id="top">
+        <button onclick="processAndSend()">send</button>
+        display id: <input id="dispIdInput" value="123">
+        <select onchange="selectDisplay()" id="displaySizeSelect">
+            <option value="296x128">Chroma29</option>
+            <option selected value="640x384">Chroma74</option>
+        </select>
+        <button onclick="process()">process without send (debug)</button>
+        <button onclick="toggleErase()">toggle erase</button>
+        <button onclick="toggleColor()">toggle color</button>
+        <button onclick="toggleDebug()">toggle debug</button>
+    </section>
+    <section id="draw">
+        <canvas id="canvas" width="640" height="384"></canvas>
+    </section>
+    <section id="temporary">
+        <canvas id="blackCanvas" width="640" height="384"></canvas>
+        <canvas id="yellowCanvas" width="640" height="384"></canvas>
+    </section>
+    <section id="output">
+        <img id="bwImg">
+        <img id="yelImg">
+    </section>
+    <script src="./jsbmp.js"></script>
+    <script>
+        const body = document.getElementById("theBody");
+        const bwImg = document.getElementById("bwImg");
+        const yelImg = document.getElementById("yelImg");
+        const canvas = document.getElementById("canvas");
+        const dispIdInput = document.getElementById("dispIdInput");
+        const displaySizeSelect = document.getElementById("displaySizeSelect");
+
+        const canvasCtx = canvas.getContext("2d");
+        canvasCtx.globalCompositeOperation = "source-over";
+        const blackCanvas = document.getElementById("blackCanvas");
+        const blackCtx = blackCanvas.getContext("2d");
+        const yellowCanvas = document.getElementById("yellowCanvas");
+        const yellowCtx = yellowCanvas.getContext("2d");
+
+        let coord = { x: 0, y: 0 };
+
+        canvas.addEventListener("mousedown", start);
+        window.addEventListener("mouseup", stop);
+
+        let erase = false;
+        const toggleErase = () => erase = !erase;
+        let color = false;
+        const toggleColor = () => color = !color;
+        const paintCtx = () => color ? yellowCtx : blackCtx;
+        const nonPaintCtx = () => !color ? yellowCtx : blackCtx;
+        const paintCanvas = () => color ? yellowCanvas : blackCanvas;
+        const nonPaintCanvas = () => !color ? yellowCanvas : blackCanvas;
+        const strokeStyle = () => color ? "#FFD800" : "#000000";
+
+        function start(event) {
+            makeCoordRelative(event);
+            document.addEventListener("mousemove", draw);
+        }
+        function stop() {
+            document.removeEventListener("mousemove", draw);
+        }
+
+        function draw(event) {
+            if (erase) {
+                for (const ctx of [blackCtx, yellowCtx]) {
+                    ctx.beginPath();
+                    withComposition(ctx, "destination-out", ctx => {
+                        ctx.fillStyle = "#FF0000";
+                        ctx.arc(coord.x, coord.y, 5, 0, Math.PI * 2, false);
+                        ctx.fill();
+                    })
+                }
+                makeCoordRelative(event);
+            } else {
+                const ctx = paintCtx();
+                ctx.beginPath();
+                ctx.strokeStyle = strokeStyle();
+                ctx.fillStyle = strokeStyle();
+                ctx.lineWidth = 5;
+                ctx.lineCap = "round";
+                ctx.moveTo(coord.x, coord.y);
+                makeCoordRelative(event);
+                ctx.lineTo(coord.x, coord.y);
+                ctx.stroke();
+
+                withComposition(nonPaintCtx(), "destination-out", ctx => {
+                    ctx.drawImage(paintCanvas(), 0, 0);
+                })
+            }
+            // re-compose black and color components
+            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+            canvasCtx.drawImage(paintCanvas(), 0, 0);
+            canvasCtx.drawImage(nonPaintCanvas(), 0, 0);
+        }
+
+        function process() {
+            for (const [cvs, img] of [[blackCanvas, bwImg], [yellowCanvas, yelImg]]) {
+                // canvases have transparent background and colorful foreground, but
+                // `jsbmp` expects black white only, so we create a copy with
+                // black-only foreground and then fill the background white
+                const off = document.createElement("canvas");
+                off.width = cvs.width;
+                off.height = cvs.height;
+                const oCtx = off.getContext("2d");
+                oCtx.fillStyle = "#000000";
+                oCtx.fillRect(0, 0, cvs.width, cvs.height);
+                withComposition(oCtx, "destination-in", ctx => {
+                    oCtx.drawImage(cvs, 0, 0);
+                })
+                withComposition(oCtx, "destination-over", ctx => {
+                    oCtx.fillStyle = "#FFFFFF";
+                    oCtx.fillRect(0, 0, cvs.width, cvs.height);
+                })
+                // HACK: fix bug in compression - force first pixel black
+                const buf = new ArrayBuffer(4);
+                const buf8 = new Uint8ClampedArray(buf);
+                const data = new Uint32Array(buf);
+                data[0] = 0x000000FF;
+                const singleBlackPixel = new ImageData(buf8, 1, 1);
+                oCtx.putImageData(singleBlackPixel, 0, 0)
+                // END-HACK
+                img.rawSrc = generateBmp(off, 1)
+                img.src = createDataUri(img.rawSrc);
+            }
+        }
+
+        async function processAndSend() {
+            process();
+            const uploads = [[bwImg.rawSrc, "/tmp-bw.bmp"], [yelImg.rawSrc, "/tmp-col.bmp"]];
+            try {
+                // first upload to ESP's SPIFFS as later processing happens async
+                await Promise.all(uploads.map(async ([data, fileName]) => {
+                    const fd = new FormData();
+                    const byteNumbers = new Array(data.length);
+                    for (let i = 0; i < data.length; i++) {
+                        byteNumbers[i] = data.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    fd.set("data", new Blob([byteArray], { type: "image/bmp" }), fileName);
+                    await window.fetch("/edit", {
+                        method: "POST",
+                        body: fd
+                    })
+                }));
+                // send previously uploaded files
+                await fetch(`/set_bmp_file?id=${dispIdInput.value}&file=tmp-bw.bmp&file1=tmp-col.bmp`, { method: "POST" });
+                alert("ok");
+            } catch (err) {
+                alert(err);
+            }
+        }
+
+        function toggleDebug() {
+            if (body.className === "nodebug") {
+                body.className = "debug";
+            } else {
+                body.className = "nodebug";
+            }
+        }
+
+        function selectDisplay() {
+            const [width, height] = displaySizeSelect.value.split("x")
+            for (const cvs of [canvas, blackCanvas, yellowCanvas]) {
+                cvs.width = width;
+                cvs.height = height;
+            }
+        }
+
+        function withComposition(ctx, comp, cb) {
+            const prevComposition = ctx.globalCompositeOperation;
+            ctx.globalCompositeOperation = comp;
+            try {
+                cb(ctx);
+            } finally {
+                ctx.globalCompositeOperation = prevComposition;
+            }
+        }
+
+        function makeCoordRelative(event) {
+            const dim = canvas.getBoundingClientRect();
+            coord.x = event.clientX - dim.left;
+            coord.y = event.clientY - dim.top;
+        }
+    </script>
+</body>
