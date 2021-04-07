@@ -47,7 +47,7 @@ The supported pictures must be monochrome .bmp, one image for each color in the 
   * If you receive TX Timeout, check the ID or try adjusting the freq offset.
 
 ## TODO list
-- Handling the ACK received from the display better, now it only compares the exprected one to the received one and resends all blocks but only needs to send the missed parts again. also parts with len of 1-7 go into a resend loop as not handled correctly if not received full on first send.
+- Handling the ACK received from the display better, now it only compares the exprected one to the received one and resends all blocks but only needs to send the missed parts again.
 - Get a better Recover method, now its very manual to get a missconfigured displays back in business
 - create a database with all activated displays with its type and IDs to make automatic sending of dynamic data simpler
 - Implement Larrys dynamic oneBitLibrary fully into the system
