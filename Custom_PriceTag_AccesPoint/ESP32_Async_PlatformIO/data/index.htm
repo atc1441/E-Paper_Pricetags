@@ -61,7 +61,7 @@
 
 
     <section>
-        <h2>Send a cmd to display</h2>
+        <h2>Send a cmd/image/text to a display</h2>
         <label for="disp_id1">Id:</label>
         <input type="text" id="disp_id1" name="disp_id1" value="123">
         <label for="cmd">CMD:</label>
@@ -90,7 +90,21 @@
         <button
             onclick='send("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&file1="+document.getElementById("file2").value+"&save_comp_file=1")'>Send
             .bmp and save compressed one on spiffs</button>
-        <br><br>
+        <br>
+<button onclick='send("set_custom?id="+document.getElementById("disp_id1").value+"&text="+document.getElementById("multiline").value+"&type="+document.getElementById("disp_type").value)'>Send Text</button>
+   <label for="disp_type">Display Type:</label>
+   <select id="disp_type" name="disp_type">
+    <option value="0">50c</option>
+    <option value="1">900RB</option>
+    <option value="2">Chroma29</option>
+    <option value="3">Chroma74</option>
+  </select>
+  <br>
+<textarea id="multiline" name="multiline" rows="8" cols="32" wrap="hard">
+Enter text here. Use the @ symbol to end each line. Press the 'Send Text' button above.
+</textarea>
+
+<br>
     </section>
 
 
@@ -103,6 +117,7 @@
     </section>
 
     <section>
+        <h2>Maintenance</h2>
         <button onclick='get("heap")'>Get Heap</button>
         <button onclick='send("set_mode?mode=sync")'>Do sync</button>
         <button onclick='send("set_mode?mode=idle")'>Idle</button>
@@ -111,7 +126,7 @@
     </section>
 
     <section>
-        <h2>SETTINGS</h2>
+        <h2>Settings</h2>
         Set Freq and ID:<br>
         <label for="the_freq">Freq 0 - 71:</label>
         <input type="text" id="the_freq" name="the_freq" value="0">
@@ -136,6 +151,7 @@
     </section>
 
     <section>
+        <h2>Status</h2>
         <div id="answer"></div>
         <div id="content"></div>
         <div id="dot"></div>

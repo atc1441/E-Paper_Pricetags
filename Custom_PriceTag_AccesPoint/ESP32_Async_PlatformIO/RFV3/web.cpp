@@ -16,12 +16,52 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <SPIFFSEditor.h>
+#include <OneBitDisplay.h>
+#include "font.h"
+
 #include "trans_assist.h"
 #include "settings.h"
 
 #include "wlan.h"
+extern uint8_t data_to_send[];
 
 AsyncWebServer server(80);
+
+//
+// Generate custom 1-bpp graphics
+//
+void GenCustomImage(OBDISP *pOBD, char *text)
+{
+int i, j, y, iLen = strlen(text);
+char szTemp[128];
+
+Serial.printf("text:%s len = %d\n", text, iLen);
+  obdFill(pOBD, 0xff, 1); // colors are inverted
+  i = 0;
+  y = (pOBD->width == 480) ? 30:0; // starting point for font baseline / top
+  while (i < iLen) {
+    // snip off one line at a time
+    j = i; // starting point of this line
+    while (j < iLen && (text[j] >= ' ' && text[j] != '@')) { // search forward for a control char / line break
+      j++;
+    }
+    if (j-i == 0) return;
+    memcpy(szTemp, &text[i], j-i);
+    szTemp[j-i] = 0;
+    while (j < iLen && (text[j] < ' ' || text[j] == '@')) { // skip the ctrl chars
+      j++;
+    }
+    Serial.printf("string = %s, at line %d\n", szTemp, y);
+    i = j; // ready for next line
+    if (pOBD->width == 480 || pOBD->width == 640) { // ZBD 900RB & Chroma74
+      obdWriteStringCustom(pOBD, (GFXfont *)&Dialog_bold_40, 0, y, szTemp, 0);
+      y += 40;
+    } else if (pOBD->width == 224) { // ZBD 50C
+      obdWriteString(pOBD,0,0,y,szTemp, FONT_12x16, 1, 1);
+      y += 2;
+    }
+  } // while
+} /* GenCustomImage() */
 
 void init_web()
 {
@@ -78,6 +118,86 @@ void init_web()
     }
     request->send(200, "text/plain", "Wrong parameter");
   });
+
+    // Call custom function to generate a dynamic display
+    server.on("/set_custom", HTTP_POST, [](AsyncWebServerRequest *request) {
+      int i, id, iSum, iType;
+      int width, height;
+      OBDISP obd;
+      char *pText;
+      int comp_size, iSize = 0;
+        _bmp_s bmp_info;
+        uint8_t *pBitmap, ucCompType = 0;
+      String filename = "";
+      Serial.println("Entering set_custom");
+      if (request->hasParam("id"))
+      {
+        id = request->getParam("id")->value().toInt();
+        iType = request->getParam("type")->value().toInt();
+        Serial.printf("Display type = %d\n", iType);
+        if (iType == 0) {// 50c
+          width = 90;
+          height = 224;
+        } else if (iType == 1) { // 900RB
+          width = 360;
+          height = 480;
+        } else if (iType == 3) { // Chroma74
+          width = 640;
+          height = 384;
+        }
+//        filename = request->getParam("file")->value();
+          filename = "/temp.bin"; // DEBUG
+          pText = (char *)request->getParam("text")->value().c_str();
+        set_display_id(id);
+          bmp_info.width = width;
+          bmp_info.height = height;
+          bmp_info.bsize = (width+7)/8;
+          bmp_info.pitch = (bmp_info.bsize + 3) & 0xfffc;
+          bmp_info.header_size = 30; // DEBUG
+         pBitmap = &data_to_send[0];
+          obdCreateVirtualDisplay(&obd, height, (width+7) & 0xfff8, pBitmap);
+          GenCustomImage(&obd, pText);
+//          for (i=0; i<(width*height/8); i++) { // fake image
+//              pBitmap[i] = (i & 0x200) ? 0xaf : 0x00;
+//          }
+          // re-arrange the bytes because the bit/byte layout is wrong for ZBD displays
+          if (width == 360) {
+            obdCopy(&obd, OBD_MSB_FIRST | OBD_HORZ_BYTES | OBD_ROTATE_90, &data_to_send[32768]);
+            iSize = (360/8) * 480;
+          } else {
+            obdCopy(&obd, OBD_MSB_FIRST | OBD_HORZ_BYTES, &data_to_send[32768]);
+            iSize = (224/8) * 90;
+          }
+          pBitmap = &data_to_send[32768];
+          // calculate uncompressed image checksum
+          iSum = 0;
+          for (i=0; i<iSize; i++) {
+              iSum += pBitmap[i];
+          }
+          bmp_info.checksum = (uint16_t)iSum;
+          // Compress it as RLE
+          if (iType == 0 || iType == 1) {// 50c / 900RB
+             comp_size = compressBufferRLE(pBitmap, (width*height)/8, &data_to_send[bmp_info.header_size]);
+             ucCompType = 1;
+          } else {
+            ucCompType = 2;
+          }
+          iSize = fill_header(data_to_send, comp_size, bmp_info.height, bmp_info.width, ucCompType /* NONE=0, RLE=1, ARITH=2 */, 0 /*colormode*/, bmp_info.header_size, bmp_info.checksum);
+          // write it to spiffs
+          Serial.printf("Writing %d bytes to temp.bin\n", iSize);
+          File file_out = SPIFFS.open(filename, "wb");
+          file_out.write(data_to_send, iSize);
+          file_out.close();
+          iSize = set_trans_file(filename);
+          if (iSize)
+          {
+            set_is_data_waiting(id);
+          }
+          request->send(200, "text/plain", "OK cmd to display " + String(id) + " File: " + filename + " Len: " + String(iSize));
+          return;
+      }
+      request->send(200, "text/plain", "Wrong parameter");
+    });
 
   server.on("/set_bmp_file", HTTP_POST, [](AsyncWebServerRequest *request) {
     int id;
