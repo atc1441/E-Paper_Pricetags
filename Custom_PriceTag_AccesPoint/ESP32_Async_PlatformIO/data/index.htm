@@ -91,7 +91,7 @@
             onclick='send("set_bmp_file?id="+document.getElementById("disp_id1").value+"&file="+document.getElementById("file1").value+"&file1="+document.getElementById("file2").value+"&save_comp_file=1")'>Send
             .bmp and save compressed one on spiffs</button>
         <br>
-<button onclick='send("set_custom?id="+document.getElementById("disp_id1").value+"&text="+document.getElementById("multiline").value+"&type="+document.getElementById("disp_type").value)'>Send Text</button>
+<button onclick='send_post("set_custom?id="+document.getElementById("disp_id1").value+"&type="+document.getElementById("disp_type").value,document.getElementById("multiline").value)'>Send Text</button>
    <label for="disp_type">Display Type:</label>
    <select id="disp_type" name="disp_type">
     <option value="0">50c</option>
@@ -170,6 +170,24 @@ Enter text here. Use the @ symbol to end each line. Press the 'Send Text' button
                 answerDiv.innerHTML = "ERROR: " + err
             }
         }
+        
+        async function send_post(url,data_text) {
+            try {
+        
+        var data = new FormData();
+        data.append('text', data_text);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
+        xhr.onload = function () {
+          answerDiv.innerHTML = this.responseText;
+          console.log(this.responseText);
+        };
+        xhr.send(data);
+            } catch (err) {
+                answerDiv.innerHTML = "ERROR: " + err
+            }
+        }
+        
 
         async function get(url) {
             try {

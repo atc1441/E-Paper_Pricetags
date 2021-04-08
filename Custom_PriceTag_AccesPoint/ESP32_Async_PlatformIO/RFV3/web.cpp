@@ -130,7 +130,7 @@ void init_web()
         uint8_t *pBitmap, ucCompType = 0;
       String filename = "";
       Serial.println("Entering set_custom");
-      if (request->hasParam("id"))
+      if (request->hasParam("id") && request->hasParam("type"))
       {
         id = request->getParam("id")->value().toInt();
         iType = request->getParam("type")->value().toInt();
@@ -147,7 +147,7 @@ void init_web()
         }
 //        filename = request->getParam("file")->value();
           filename = "/temp.bin"; // DEBUG
-          pText = (char *)request->getParam("text")->value().c_str();
+          pText = (char *)request->getParam("text",true)->value().c_str();
         set_display_id(id);
           bmp_info.width = width;
           bmp_info.height = height;
