@@ -35,10 +35,10 @@ void GenCustomImage(OBDISP *pOBD, char *text)
 int i, j, y, iLen = strlen(text);
 char szTemp[128];
 
-Serial.printf("text:%s len = %d\n", text, iLen);
+//Serial.printf("text:%s len = %d\n", text, iLen);
   obdFill(pOBD, 0xff, 1); // colors are inverted
   i = 0;
-  y = (pOBD->width == 480) ? 30:0; // starting point for font baseline / top
+  y = (pOBD->width >= 480) ? 30:0; // starting point for font baseline / top
   while (i < iLen) {
     // snip off one line at a time
     j = i; // starting point of this line
@@ -51,7 +51,7 @@ Serial.printf("text:%s len = %d\n", text, iLen);
     while (j < iLen && (text[j] < ' ' || text[j] == '@')) { // skip the ctrl chars
       j++;
     }
-    Serial.printf("string = %s, at line %d\n", szTemp, y);
+//    Serial.printf("string = %s, at line %d\n", szTemp, y);
     i = j; // ready for next line
     if (pOBD->width == 480 || pOBD->width == 640) { // ZBD 900RB & Chroma74
       obdWriteStringCustom(pOBD, (GFXfont *)&Dialog_bold_40, 0, y, szTemp, 0);
@@ -141,9 +141,12 @@ void init_web()
         } else if (iType == 1) { // 900RB
           width = 360;
           height = 480;
+        } else if (iType == 2) { // Chroma29
+          width 128;
+          height = 296;
         } else if (iType == 3) { // Chroma74
-          width = 640;
-          height = 384;
+          width = 384;
+          height = 640;
         }
 //        filename = request->getParam("file")->value();
           filename = "/temp.bin"; // DEBUG
@@ -152,8 +155,8 @@ void init_web()
           bmp_info.width = width;
           bmp_info.height = height;
           bmp_info.bsize = (width+7)/8;
-          bmp_info.pitch = (bmp_info.bsize + 3) & 0xfffc;
-          bmp_info.header_size = 30; // DEBUG
+          bmp_info.pitch = (((height+7)/8) + 3) & 0xfffc;
+          bmp_info.header_size = (iType == 3) ? 32:30;
          pBitmap = &data_to_send[0];
           obdCreateVirtualDisplay(&obd, height, (width+7) & 0xfff8, pBitmap);
           GenCustomImage(&obd, pText);
@@ -163,10 +166,15 @@ void init_web()
           // re-arrange the bytes because the bit/byte layout is wrong for ZBD displays
           if (width == 360) {
             obdCopy(&obd, OBD_MSB_FIRST | OBD_HORZ_BYTES | OBD_ROTATE_90, &data_to_send[32768]);
-            iSize = (360/8) * 480;
+            iSize = (width/8) * height;
+          } else if (width == 384 || width == 128) { // Chroma74 & Chroma29
+            bmp_info.width = height; // swap x/y
+            bmp_info.height = width;
+            obdCopy(&obd, OBD_MSB_FIRST | OBD_HORZ_BYTES, &data_to_send[32768]);
+            iSize = (height/8) * width;
           } else {
             obdCopy(&obd, OBD_MSB_FIRST | OBD_HORZ_BYTES, &data_to_send[32768]);
-            iSize = (224/8) * 90;
+            iSize = (height/8) * width;
           }
           pBitmap = &data_to_send[32768];
           // calculate uncompressed image checksum
@@ -175,12 +183,13 @@ void init_web()
               iSum += pBitmap[i];
           }
           bmp_info.checksum = (uint16_t)iSum;
-          // Compress it as RLE
+          // Compress it as RLE or Arithmetic
           if (iType == 0 || iType == 1) {// 50c / 900RB
              comp_size = compressBufferRLE(pBitmap, (width*height)/8, &data_to_send[bmp_info.header_size]);
              ucCompType = 1;
-          } else {
-            ucCompType = 2;
+          } else { // Chroma29 + Chroma74
+             comp_size = encode_raw_image((File)NULL, pBitmap, &bmp_info, &data_to_send[bmp_info.header_size], 32700);
+             ucCompType = 2;
           }
           iSize = fill_header(data_to_send, comp_size, bmp_info.height, bmp_info.width, ucCompType /* NONE=0, RLE=1, ARITH=2 */, 0 /*colormode*/, bmp_info.header_size, bmp_info.checksum);
           // write it to spiffs

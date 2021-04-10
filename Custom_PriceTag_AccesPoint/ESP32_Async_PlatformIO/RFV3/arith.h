@@ -60,5 +60,5 @@ void clean_last_bits(encode_data_s *encode_data);
 void write_next_bit(encode_data_s *encode_data);
 void handle_bit_decode(encode_data_s *encode_data, int key_value, int key_color, int pixel_color);
 void complete_last_bit_part(encode_data_s *encode_data);
-void calculate_entropy(File file, image_s *bin_image_input, _bmp_s *bmp_infos, entropy_calc_s *calc);
-uint32_t encode_raw_image(File file, _bmp_s *bmp_infos, uint8_t *output_bit_buffer, uint32_t max_output_size);
+void calculate_entropy(File file, uint8_t *pBitmap, image_s *bin_image_input, _bmp_s *bmp_infos, entropy_calc_s *calc);
+uint32_t encode_raw_image(File file, uint8_t *pBitmap, _bmp_s *bmp_infos, uint8_t *output_bit_buffer, uint32_t max_output_size);

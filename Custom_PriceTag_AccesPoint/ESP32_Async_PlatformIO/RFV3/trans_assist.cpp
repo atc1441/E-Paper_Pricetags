@@ -227,9 +227,9 @@ int load_img_to_bufer(String &path, String &path1, bool save_file_to_spiffs)
 
     if (compression_mode == 2) //Arith
     {
-        comp_size = encode_raw_image(file, &bmp_infos, &data_to_send[bmp_infos.header_size], _send_size - 32 - 7);
+        comp_size = encode_raw_image(file, NULL, &bmp_infos, &data_to_send[bmp_infos.header_size], _send_size - 32 - 7);
         if (colormode)
-            comp_size += encode_raw_image(file_color, &bmp_infos, &data_to_send[bmp_infos.header_size + comp_size], _send_size - 7 - comp_size);
+            comp_size += encode_raw_image(file_color, NULL, &bmp_infos, &data_to_send[bmp_infos.header_size + comp_size], _send_size - 7 - comp_size);
         if (comp_size <= 0 && comp_size > ((bmp_infos.width + bmp_infos.height) / 8) * (colormode ? 2 : 1))
         { // if compression failed or to big do none compression
             compression_mode = 0;
@@ -314,6 +314,7 @@ int load_img_to_bufer_rle(File file_in, _bmp_s *bmp_infos)
 
 int fill_header(uint8_t *buffer_out, int compression_size, int height, int width, int compression_type, int color, int header_size, uint16_t checksum)
 {
+    memset(buffer_out, 0, header_size);
     // fill the output data so it can directly be send to the display
     buffer_out[0] = 0x83;
     buffer_out[1] = 0x19;
@@ -351,6 +352,11 @@ int fill_header(uint8_t *buffer_out, int compression_size, int height, int width
     buffer_out[compression_size + header_size + 4] = 0x00;
     buffer_out[compression_size + header_size + 5] = 0x01;
     buffer_out[compression_size + header_size + 6] = 0x01;
+
+for (int i=0; i<header_size; i++) {
+  Serial.printf("%02x,",buffer_out[i]);
+}
+Serial.println(" ");
 
     return header_size + compression_size + 7;
 }

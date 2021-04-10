@@ -189,9 +189,8 @@ void complete_last_bit_part(encode_data_s *encode_data)
 //
 // calculate_entropy
 //
-void calculate_entropy(File file, image_s *bin_image_input, _bmp_s *bmp_infos, entropy_calc_s *calc)
+void calculate_entropy(File file, uint8_t *pBitmap, image_s *bin_image_input, _bmp_s *bmp_infos, entropy_calc_s *calc)
 {
-
     // clear line buffer beyond our image size so that we don't
     // have to check boundaries on every pixel
     memset(&bin_image_input->current_line[0], 0, sizeof(bin_image_input->current_line));
@@ -203,12 +202,15 @@ void calculate_entropy(File file, image_s *bin_image_input, _bmp_s *bmp_infos, e
         memcpy(bin_image_input->previous_line, bin_image_input->current_line, sizeof(bin_image_input->current_line));
         // Get a new line of image
         // Can be replaced with a "get_src_image_line()" function
-
-        if (bmp_infos->bTopDown)
-            file.seek(bmp_infos->offset + (bmp_infos->pitch * current_x), SeekSet);
-        else
-            file.seek(bmp_infos->offset + (bin_image_input->height - 1 - current_x) * bmp_infos->pitch, SeekSet);
-        file.read(&bin_image_input->current_line[1], (size_t)bin_image_input->height / 8);
+        if (pBitmap != NULL) { // memory bitmap
+            memcpy(&bin_image_input->current_line[1], &pBitmap[bmp_infos->pitch * current_x], (size_t)bmp_infos->pitch);
+        } else {
+            if (bmp_infos->bTopDown)
+                file.seek(bmp_infos->offset + (bmp_infos->pitch * current_x), SeekSet);
+            else
+                file.seek(bmp_infos->offset + (bin_image_input->height - 1 - current_x) * bmp_infos->pitch, SeekSet);
+            file.read(&bin_image_input->current_line[1], (size_t)bin_image_input->height / 8);
+        }
 
         //memcpy(&bin_image_input->current_line[1], &bin_image_input->input_buffer[current_x * (bin_image_input->height / 8)], bin_image_input->height / 8);
 
@@ -264,10 +266,14 @@ void calculate_entropy(File file, image_s *bin_image_input, _bmp_s *bmp_infos, e
 //
 // encode_raw_image
 //
-// Pass a NULL value for the output buffer to see big the
-// compressed data will be.
+// Pass a NULL value for the output buffer ptr to
+// know how big the compressed data will be.
 //
-uint32_t encode_raw_image(File file, _bmp_s *bmp_infos, uint8_t *output_bit_buffer, uint32_t max_output_size)
+// Input data can come from a file or bitmap in memory. if File is NULL
+// then the data will be read from the memory pointer and assumed to be a
+// top-down bitmap
+//
+uint32_t encode_raw_image(File file, uint8_t *pBitmap, _bmp_s *bmp_infos, uint8_t *output_bit_buffer, uint32_t max_output_size)
 {
 
     encode_data_s encode_data;
@@ -275,15 +281,18 @@ uint32_t encode_raw_image(File file, _bmp_s *bmp_infos, uint8_t *output_bit_buff
     image_s image = {bmp_infos->width, bmp_infos->height};
     uint8_t key_color;
 
+Serial.printf("Entering encode_raw_image; width=%d, height=%d\n", bmp_infos->width, bmp_infos->height);
+
     if (bmp_infos->height < 1 || bmp_infos->width < 1)
         return 0; //if we dont have any width or heigth there is nothing do encode
+
     encode_data.out.len = 0;
     encode_data.out.len_max = ((max_output_size - 8) * 8);
     encode_data.out.buffer = NULL;
     encode_data.cur_part_pixel_count = 0xff;
     encode_data.countdown_bits = 0;
 
-    calculate_entropy(file, &image, bmp_infos, &entropy);
+    calculate_entropy(file, pBitmap, &image, bmp_infos, &entropy);
 
     if (output_bit_buffer != NULL)
     {
@@ -309,13 +318,15 @@ uint32_t encode_raw_image(File file, _bmp_s *bmp_infos, uint8_t *output_bit_buff
         memcpy(image.previous_line, image.current_line, sizeof(image.current_line));
         // Get a new line of image
         // Can be replaced with a "get_src_image_line()" function
-
-        if (bmp_infos->bTopDown)
-            file.seek(bmp_infos->offset + (bmp_infos->pitch * current_x), SeekSet);
-        else
-            file.seek(bmp_infos->offset + (bmp_infos->height - 1 - current_x) * bmp_infos->pitch, SeekSet);
-        file.read(&image.current_line[1], (size_t)image.height / 8);
-
+        if (pBitmap != NULL) { // memory bitmap
+            memcpy(&image.current_line[1], &pBitmap[bmp_infos->pitch * current_x], (size_t)image.height / 8);
+        } else {
+            if (bmp_infos->bTopDown)
+                file.seek(bmp_infos->offset + (bmp_infos->pitch * current_x), SeekSet);
+            else
+                file.seek(bmp_infos->offset + (bmp_infos->height - 1 - current_x) * bmp_infos->pitch, SeekSet);
+            file.read(&image.current_line[1], (size_t)image.height / 8);
+        }
         //memcpy(&image.current_line[1], &image.input_buffer[current_x * (image.height / 8)], image.height / 8);
 
         for (int current_y = 0; current_y < image.height; current_y++)
