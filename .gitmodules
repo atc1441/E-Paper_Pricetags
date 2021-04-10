@@ -1,0 +1,6 @@
+[submodule "Custom_PriceTag_AccesPoint/ESP32_Async_PlatformIO/lib/BitBang_I2C"]
+	path = Custom_PriceTag_AccesPoint/ESP32_Async_PlatformIO/lib/BitBang_I2C
+	url = https://github.com/bitbank2/BitBang_I2C.git
+[submodule "Custom_PriceTag_AccesPoint/ESP32_Async_PlatformIO/lib/OneBitDisplay"]
+	path = Custom_PriceTag_AccesPoint/ESP32_Async_PlatformIO/lib/OneBitDisplay
+	url = https://github.com/bitbank2/OneBitDisplay.git
