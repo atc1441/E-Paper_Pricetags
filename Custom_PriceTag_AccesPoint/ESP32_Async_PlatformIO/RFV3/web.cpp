@@ -57,7 +57,7 @@ void GenCustomImage(OBDISP *pOBD, char *text)
     }
     //    Serial.printf("string = %s, at line %d\n", szTemp, y);
     i = j; // ready for next line
-    if (pOBD->width == 224 || pOBD->width == 128)
+    if (pOBD->width == 224 || pOBD->width == 296) // 50c & Chroma29
     { // ZBD 50C
       obdWriteString(pOBD, 0, 0, y, szTemp, FONT_12x16, 1, 1);
       y += 2;
