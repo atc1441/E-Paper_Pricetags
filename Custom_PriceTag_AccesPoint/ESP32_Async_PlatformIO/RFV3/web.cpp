@@ -42,13 +42,13 @@ char szTemp[128];
   while (i < iLen) {
     // snip off one line at a time
     j = i; // starting point of this line
-    while (j < iLen && (text[j] >= ' ' && text[j] != '@')) { // search forward for a control char / line break
+    while (j < iLen && (text[j] >= ' ')) { // search forward for a control char / line break
       j++;
     }
     if (j-i == 0) return;
     memcpy(szTemp, &text[i], j-i);
     szTemp[j-i] = 0;
-    while (j < iLen && (text[j] < ' ' || text[j] == '@')) { // skip the ctrl chars
+    while (j < iLen && (text[j] < ' ')) { // skip the ctrl chars
       j++;
     }
 //    Serial.printf("string = %s, at line %d\n", szTemp, y);
