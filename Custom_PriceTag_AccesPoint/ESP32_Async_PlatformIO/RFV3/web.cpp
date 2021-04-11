@@ -142,7 +142,7 @@ void init_web()
           width = 360;
           height = 480;
         } else if (iType == 2) { // Chroma29
-          width 128;
+          width = 128;
           height = 296;
         } else if (iType == 3) { // Chroma74
           width = 384;
