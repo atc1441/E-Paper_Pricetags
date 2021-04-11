@@ -281,6 +281,7 @@ void init_web()
         memcpy(&data_to_send[bmp_info.header_size],pBitmap,comp_size);
         ucCompType = 0;
       }
+      
       iSize = fill_header(data_to_send, comp_size, bmp_info.height, bmp_info.width, ucCompType /* NONE=0, RLE=1, ARITH=2 */, 0 /*colormode*/, bmp_info.header_size, bmp_info.checksum);
       // write it to spiffs
       Serial.printf("Writing %d bytes to temp.bin\n", iSize);
