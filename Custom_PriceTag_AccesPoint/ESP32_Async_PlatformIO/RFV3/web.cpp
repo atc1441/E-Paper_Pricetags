@@ -154,8 +154,8 @@ void init_web()
       }
       else if (iType == 2)
       { // Chroma29
-        width = 296;
-        height = 128;
+        width = 128;
+        height = 296;
       }
       else if (iType == 3)
       { // Chroma74
@@ -191,11 +191,9 @@ void init_web()
         iSize = (height / 8) * width;
       }
       else if (iType == 2)
-      {                          // Chroma29
-        bmp_info.width = height; // swap x/y
-        bmp_info.height = width;
-        obdCopy(&obd, OBD_MSB_FIRST | OBD_HORZ_BYTES, &data_to_send[32768]);
-        iSize = (height / 8) * width;
+      {                       // Chroma29
+        obdCopy(&obd, OBD_MSB_FIRST | OBD_HORZ_BYTES | OBD_ROTATE_90, &data_to_send[32768]);
+        iSize = (width / 8) * height;
       }
       else
       { // 50c
