@@ -163,16 +163,16 @@ void init_web()
 //          for (i=0; i<(width*height/8); i++) { // fake image
 //              pBitmap[i] = (i & 0x200) ? 0xaf : 0x00;
 //          }
-          // re-arrange the bytes because the bit/byte layout is wrong for ZBD displays
-          if (width == 360) {
+          // re-arrange the bytes because the bit/byte layout is different for certain
+          if (width == 360 || width == 128) {
             obdCopy(&obd, OBD_MSB_FIRST | OBD_HORZ_BYTES | OBD_ROTATE_90, &data_to_send[32768]);
             iSize = (width/8) * height;
-          } else if (width == 384 || width == 128) { // Chroma74 & Chroma29
+          } else if (width == 384) { // Chroma74
             bmp_info.width = height; // swap x/y
             bmp_info.height = width;
             obdCopy(&obd, OBD_MSB_FIRST | OBD_HORZ_BYTES, &data_to_send[32768]);
             iSize = (height/8) * width;
-          } else {
+          else { // 50c
             obdCopy(&obd, OBD_MSB_FIRST | OBD_HORZ_BYTES, &data_to_send[32768]);
             iSize = (height/8) * width;
           }
