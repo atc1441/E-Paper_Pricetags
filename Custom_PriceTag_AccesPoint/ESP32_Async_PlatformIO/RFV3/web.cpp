@@ -172,7 +172,7 @@ void init_web()
             bmp_info.height = width;
             obdCopy(&obd, OBD_MSB_FIRST | OBD_HORZ_BYTES, &data_to_send[32768]);
             iSize = (height/8) * width;
-          else { // 50c
+          } else { // 50c
             obdCopy(&obd, OBD_MSB_FIRST | OBD_HORZ_BYTES, &data_to_send[32768]);
             iSize = (height/8) * width;
           }
