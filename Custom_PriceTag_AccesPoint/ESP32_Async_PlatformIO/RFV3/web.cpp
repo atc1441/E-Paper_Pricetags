@@ -57,7 +57,7 @@ void GenCustomImage(OBDISP *pOBD, char *text)
     }
     //    Serial.printf("string = %s, at line %d\n", szTemp, y);
     i = j; // ready for next line
-    if (pOBD->width == 224 || pOBD->width == 128)
+    if (pOBD->width == 224 || pOBD->width == 296)
     { // ZBD 50C
       obdWriteString(pOBD, 0, 0, y, szTemp, FONT_12x16, 1, 1);
       y += 2;
@@ -72,54 +72,53 @@ void GenCustomImage(OBDISP *pOBD, char *text)
 
 void WriteBMP(const char *filename, uint8_t *pData, int width, int height, int bpp)
 {
-    int bsize, lsize, i, iHeaderSize, iBodySize;
-    uint8_t pBuf[128]; // holds BMP header
-    File file_out = SPIFFS.open(filename, "wb");
+  int lsize, i, iHeaderSize, iBodySize;
+  uint8_t pBuf[128]; // holds BMP header
+  File file_out = SPIFFS.open(filename, "wb");
 
-    bsize = lsize = ((width * bpp) + 7)/8;
-    lsize = (lsize + 3) & 0xfffc; // DWORD aligned
-    iHeaderSize = 54;
-    iHeaderSize += (1<<(bpp+2));
-    iBodySize = lsize * height;
-    i = iBodySize + iHeaderSize; // datasize
-    memset(pBuf, 0, 54);
-    pBuf[0] = 'B';
-    pBuf[1] = 'M';
-    pBuf[2] = i & 0xff;     // 4 bytes of file size
-    pBuf[3] = (i >> 8) & 0xff;
-    pBuf[4] = (i >> 16) & 0xff;
-    pBuf[5] = (i >> 24) & 0xff;
-    /* Offset to data bits */
-    pBuf[10] = iHeaderSize & 0xff;
-    pBuf[11] = (unsigned char)(iHeaderSize >> 8);
-    pBuf[14] = 0x28;
-    pBuf[18] = width & 0xff; // xsize low
-    pBuf[19] = (unsigned char)(width >> 8); // xsize high
-    i = -height; // top down bitmap
-    pBuf[22] = i & 0xff; // ysize low
-    pBuf[23] = (unsigned char)(i >> 8); // ysize high
-    pBuf[24] = 0xff;
-    pBuf[25] = 0xff;
-    pBuf[26] = 1; // number of planes
-    pBuf[28] = (uint8_t)bpp;
-    pBuf[30] = 0; // uncompressed
-    i = iBodySize;
-    pBuf[34] = i & 0xff;  // data size
-    pBuf[35] = (i >> 8) & 0xff;
-    pBuf[36] = (i >> 16) & 0xff;
-    pBuf[37] = (i >> 24) & 0xff;
-    pBuf[54] = pBuf[55] = pBuf[56] = pBuf[57] = pBuf[61] = 0; // palette
-    pBuf[58] = pBuf[59] = pBuf[60] = 0xff;
+  lsize = (lsize + 3) & 0xfffc; // DWORD aligned
+  iHeaderSize = 54;
+  iHeaderSize += (1 << (bpp + 2));
+  iBodySize = lsize * height;
+  i = iBodySize + iHeaderSize; // datasize
+  memset(pBuf, 0, 54);
+  pBuf[0] = 'B';
+  pBuf[1] = 'M';
+  pBuf[2] = i & 0xff; // 4 bytes of file size
+  pBuf[3] = (i >> 8) & 0xff;
+  pBuf[4] = (i >> 16) & 0xff;
+  pBuf[5] = (i >> 24) & 0xff;
+  /* Offset to data bits */
+  pBuf[10] = iHeaderSize & 0xff;
+  pBuf[11] = (unsigned char)(iHeaderSize >> 8);
+  pBuf[14] = 0x28;
+  pBuf[18] = width & 0xff;                // xsize low
+  pBuf[19] = (unsigned char)(width >> 8); // xsize high
+  i = -height;                            // top down bitmap
+  pBuf[22] = i & 0xff;                    // ysize low
+  pBuf[23] = (unsigned char)(i >> 8);     // ysize high
+  pBuf[24] = 0xff;
+  pBuf[25] = 0xff;
+  pBuf[26] = 1; // number of planes
+  pBuf[28] = (uint8_t)bpp;
+  pBuf[30] = 0; // uncompressed
+  i = iBodySize;
+  pBuf[34] = i & 0xff; // data size
+  pBuf[35] = (i >> 8) & 0xff;
+  pBuf[36] = (i >> 16) & 0xff;
+  pBuf[37] = (i >> 24) & 0xff;
+  pBuf[54] = pBuf[55] = pBuf[56] = pBuf[57] = pBuf[61] = 0; // palette
+  pBuf[58] = pBuf[59] = pBuf[60] = 0xff;
+  {
+    uint8_t *s = pData;
+    file_out.write(pBuf, iHeaderSize);
+    for (i = 0; i < height; i++)
     {
-        uint8_t *s = pData;
-        file_out.write(pBuf, iHeaderSize);
-        for (i=0; i<height; i++)
-        {
-            file_out.write(s, lsize);
-            s += lsize;
-        }
-        file_out.close();
+      file_out.write(s, lsize);
+      s += lsize;
     }
+    file_out.close();
+  }
 } /* WriteBMP() */
 
 void init_web()
@@ -243,7 +242,7 @@ void init_web()
         iSize = (height / 8) * width;
       }
       else if (iType == 2)
-      {                       // Chroma29
+      { // Chroma29
         obdCopy(&obd, OBD_MSB_FIRST | OBD_HORZ_BYTES | OBD_ROTATE_90, &data_to_send[32768]);
         iSize = (width / 8) * height;
       }
@@ -271,10 +270,16 @@ void init_web()
         comp_size = compressBufferRLE(pBitmap, (width * height) / 8, &data_to_send[bmp_info.header_size]);
         ucCompType = 1;
       }
-      else
+      else if (iType == 3)
       { // Chroma29 + Chroma74
         comp_size = encode_raw_image((File)NULL, pBitmap, &bmp_info, &data_to_send[bmp_info.header_size], 32700);
         ucCompType = 2;
+      }
+      else
+      {
+        comp_size = (width * height) / 8;
+        memcpy(&data_to_send[bmp_info.header_size],pBitmap,comp_size);
+        ucCompType = 0;
       }
       iSize = fill_header(data_to_send, comp_size, bmp_info.height, bmp_info.width, ucCompType /* NONE=0, RLE=1, ARITH=2 */, 0 /*colormode*/, bmp_info.header_size, bmp_info.checksum);
       // write it to spiffs
