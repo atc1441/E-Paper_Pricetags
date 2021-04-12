@@ -12,7 +12,12 @@
 #include "trans_assist.h"
 #include "arith.h"
 #include <FS.h>
-#include <SPIFFS.h>
+#if defined(ESP32)
+#include "SPIFFS.h"
+#endif
+#ifdef ARDUINO_ARCH_ESP8266
+#include <Hash.h>
+#endif
 
 //
 // set_bit

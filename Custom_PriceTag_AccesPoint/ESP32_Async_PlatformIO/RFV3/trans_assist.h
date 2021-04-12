@@ -6,7 +6,13 @@
 #include "cc1101.h"
 #include "interval_timer.h"
 #include <FS.h>
-#include <SPIFFS.h>
+#if defined(ESP32)
+#include "SPIFFS.h"
+#include <ESPmDNS.h>
+#endif
+#ifdef ARDUINO_ARCH_ESP8266
+#include <Hash.h>
+#endif
 
 typedef struct _bmp_s_tag
 {

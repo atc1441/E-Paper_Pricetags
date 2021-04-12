@@ -1,0 +1,41 @@
+name: PlatformIO
+
+on: [push, pull_request]
+
+jobs:
+  PlatformIO:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    
+    - uses: actions/checkout@v1
+    
+    - name: Init submodules
+      run: git submodule update --init
+      
+    - name: Set up Python 3
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3
+        
+    - name: Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip3 install platformio
+ 
+    - name: Populate wlan.h
+      run: |
+        cd Custom_PriceTag_AccesPoint/ESP32_Async_PlatformIO/
+        cp RFV3/wlan_gitignore_replacement.h RFV3/wlan.h
+ 
+    - name: Build with PlatformIO
+      run: |
+        cd Custom_PriceTag_AccesPoint/ESP32_Async_PlatformIO/
+        pio run
+        ls -lh .pio/build/esp32doit-devkit-v1/firmware.bin
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Artifacts
+        path: Custom_PriceTag_AccesPoint/ESP32_Async_PlatformIO/.pio/build/**/firmware.bin

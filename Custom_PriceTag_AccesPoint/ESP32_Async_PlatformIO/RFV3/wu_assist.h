@@ -7,7 +7,12 @@
 #include "utils.h"
 #include "interval_timer.h"
 #include <FS.h>
-#include <SPIFFS.h>
+#if defined(ESP32)
+#include "SPIFFS.h"
+#endif
+#ifdef ARDUINO_ARCH_ESP8266
+#include <Hash.h>
+#endif
 #include "arith.h"
 #include "settings.h"
 
