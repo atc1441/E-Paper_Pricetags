@@ -1,6 +1,8 @@
 #include "settings.h"
 #include <FS.h>
-#include <SPIFFS.h>
+#if defined(ESP32)
+#include "SPIFFS.h"
+#endif
 #include "main_variables.h"
 #include "cc1101.h"
 
