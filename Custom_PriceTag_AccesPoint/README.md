@@ -15,7 +15,7 @@ This project is set up to use PlatformIO but it should also be possible to compi
 * Connect the CC1101 868 MHz radio module to the ESP32 using the pinout specified [in the RFV3.h header file](ESP32_Async_PlatformIO/RFV3/RFV3.h).
 * Rename [wlan_gitignore_replacement.h](ESP32_Async_PlatformIO/RFV3/wlan_gitignore_replacement.h) to wlan.h and supply your WiFi credentials
 * Build the project and upload to the ESP32
-* Upon first boot, the ESP32 will connect to WiFi Navigate with a browser to *ip*/edit and upload the supplied [index.htm](ESP32_Async_PlatformIO/index.htm)
+* Upon first boot, the ESP32 will connect to WiFi Navigate with a browser to *ip*/edit and upload the supplied [index.htm](ESP32_Async_PlatformIO/data/index.htm)
 * Normal control of the AccessPoint can now be controlled by navigating to the IP address of the ESP32
 
 ## Radio Module Quirks
