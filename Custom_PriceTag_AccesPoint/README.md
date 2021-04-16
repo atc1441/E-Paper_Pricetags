@@ -21,7 +21,7 @@ This project is set up to use PlatformIO but it should also be possible to compi
 
 ## Radio Module Quirks
 
-Testing shows the "green" CC1101 868 MHz modules have out-of-spec oscillators. The calibration registers can be used to compensate for this using the "Set base freq offset" of the web interface. Offsets of 15-17 have been shown to work well for these boards. If you cannot communicate with your displays, set this value and try again.
+Testing shows the "green" CC1101 868 MHz modules have out-of-spec oscillators. The calibration registers can be used to compensate for this using the "Set base freq offset" of the web interface. Offsets of 15-24 have been shown to work well for these boards, it may be necessary to go up to 50. If you cannot communicate with your displays, set this value and try again.
 
 ## Image Formats
 
