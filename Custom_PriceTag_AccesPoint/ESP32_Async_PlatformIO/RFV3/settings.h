@@ -1,6 +1,11 @@
 #pragma once
 #include <FS.h>
-#include <SPIFFS.h>
+#if defined(ESP32)
+#include "SPIFFS.h"
+#endif
+#ifdef ARDUINO_ARCH_ESP8266
+#include <Hash.h>
+#endif
 
 void read_boot_settings();
 void save_settings_to_flash();
