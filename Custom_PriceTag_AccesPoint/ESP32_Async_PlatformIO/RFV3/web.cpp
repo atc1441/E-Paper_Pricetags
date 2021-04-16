@@ -31,6 +31,8 @@
 #include "settings.h"
 
 #include "wlan.h"
+#include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
+
 extern uint8_t data_to_send[];
 
 AsyncWebServer server(80);
@@ -131,26 +133,14 @@ void WriteBMP(const char *filename, uint8_t *pData, int width, int height, int b
 
 void init_web()
 {
-  WiFi.mode(WIFI_AP_STA);
-  WiFi.begin(ssid, password);
-  WiFi.softAP("home", "aaaaaaaa");
-  if (WiFi.waitForConnectResult() != WL_CONNECTED)
-  {
-    WiFi.disconnect(false);
-    delay(1000);
-    WiFi.begin(ssid, password);
-  }
-  long start_wifi = millis();
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-    if (millis() - start_wifi > 20000)
-      return;
-    if (WiFi.softAPgetStationNum() > 0)
-      return;
-  }
-  Serial.println("");
+  WiFi.mode(WIFI_STA);
+  WiFiManager wm;
+  bool res;
+  res = wm.autoConnect("AutoConnectAP");
+  if(!res) {
+      Serial.println("Failed to connect");
+      ESP.restart();
+  } 
   Serial.print("Connected! IP address: ");
   Serial.println(WiFi.localIP());
 
