@@ -30,11 +30,12 @@
 #include "trans_assist.h"
 #include "settings.h"
 
-#include "wlan.h"
 #include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
 
 extern uint8_t data_to_send[];
 
+const char *http_username = "admin";
+const char *http_password = "admin";
 AsyncWebServer server(80);
 
 //
@@ -82,7 +83,7 @@ void GenCustomImage(OBDISP *pOBD, char *text)
 
 void WriteBMP(const char *filename, uint8_t *pData, int width, int height, int bpp)
 {
-  int lsize, i, iHeaderSize, iBodySize;
+  int lsize = 0, i, iHeaderSize, iBodySize;
   uint8_t pBuf[128]; // holds BMP header
   File file_out = SPIFFS.open(filename, "wb");
 
@@ -137,10 +138,11 @@ void init_web()
   WiFiManager wm;
   bool res;
   res = wm.autoConnect("AutoConnectAP");
-  if(!res) {
-      Serial.println("Failed to connect");
-      ESP.restart();
-  } 
+  if (!res)
+  {
+    Serial.println("Failed to connect");
+    ESP.restart();
+  }
   Serial.print("Connected! IP address: ");
   Serial.println(WiFi.localIP());
 
@@ -276,10 +278,10 @@ void init_web()
       else
       {
         comp_size = (width * height) / 8;
-        memcpy(&data_to_send[bmp_info.header_size],pBitmap,comp_size);
+        memcpy(&data_to_send[bmp_info.header_size], pBitmap, comp_size);
         ucCompType = 0;
       }
-      
+
       iSize = fill_header(data_to_send, comp_size, bmp_info.height, bmp_info.width, ucCompType /* NONE=0, RLE=1, ARITH=2 */, 0 /*colormode*/, bmp_info.header_size, bmp_info.checksum);
       // write it to spiffs
       Serial.printf("Writing %d bytes to temp.bin\n", iSize);
