@@ -13,9 +13,10 @@ It should work on more displays from the Company ZBD / DisplayData but these are
 
 This project is set up to use PlatformIO but it should also be possible to compile and flash using the Arduino IDE.
 * Connect the CC1101 868 MHz radio module to the ESP32 using the pinout specified [in the RFV3.h header file](ESP32_Async_PlatformIO/RFV3/RFV3.h).
-* Rename [wlan_gitignore_replacement.h](ESP32_Async_PlatformIO/RFV3/wlan_gitignore_replacement.h) to wlan.h and supply your WiFi credentials
+* Rename [wlan_gitignore_replacement.h](ESP32_Async_PlatformIO/RFV3/wlan_gitignore_replacement.h) to wlan.h and supply the desired credentials for the admin interface
 * Build the project and upload to the ESP32
-* Upon first boot, the ESP32 will connect to WiFi Navigate with a browser to *ip*/edit and upload the supplied [index.htm](ESP32_Async_PlatformIO/data/index.htm)
+* To set up the WLAN credentials, connect to the access point called "AutoConnectAP" and navigate to http://192.168.4.1 (you should be redirected there automatically). Click on the name of your network (SSID), enter your WLAN password, and click on "Save*. The ESP32 will restart and will connect to the selected WLAN. In case the selected WLAN is not available, the ESP32 will automatically open the access point called "AutoConnectAP", allowing you to select another WLAN ([details](https://github.com/tzapu/WiFiManager))
+* Navigate with a browser to *ip*/edit and upload the supplied [index.htm](ESP32_Async_PlatformIO/index.htm)
 * Normal control of the AccessPoint can now be controlled by navigating to the IP address of the ESP32
 
 ## Radio Module Quirks
