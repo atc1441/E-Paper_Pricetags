@@ -11,7 +11,7 @@ It should work on more displays from the Company ZBD / DisplayData but these are
 
 ## Installation
 
-This project is set up to use PlatformIO but it should also be possible to compile and flash using the Arduino IDE.
+This project is set up to use PlatformIO but it should also be possible to compile and flash using the Arduino IDE (note that you need to use the [`feature_asyncwebserver` branch](https://github.com/tzapu/WiFiManager/archive/refs/heads/feature_asyncwebserver.zip) of the WiFiManager library, not the one that may be offered in the Arduino IDE Library Manager).
 * Connect the CC1101 868 MHz radio module to the ESP32 using the pinout specified [in the RFV3.h header file](ESP32_Async_PlatformIO/RFV3/RFV3.h).
 * Build the project and upload to the ESP32
 * To set up the WLAN credentials, connect to the access point called "AutoConnectAP" and navigate to http://192.168.4.1 (you should be redirected there automatically). Click on the name of your network (SSID), enter your WLAN password, and click on "Save*. The ESP32 will restart and will connect to the selected WLAN. In case the selected WLAN is not available, the ESP32 will automatically open the access point called "AutoConnectAP", allowing you to select another WLAN ([details](https://github.com/tzapu/WiFiManager))
