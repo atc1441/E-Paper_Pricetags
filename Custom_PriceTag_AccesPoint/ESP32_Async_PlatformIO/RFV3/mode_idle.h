@@ -11,7 +11,7 @@ public:
   virtual void new_interval()
   {
     resync_start_counter++;
-    if (resync_start_counter >= get_rounds_to_resync() && !get_last_to_short())
+    if (resync_start_counter >= get_rounds_to_resync() && !get_last_to_short()  && !get_trans_mode())
     {
       resync_start_counter = 0;
       set_mode_wu();
