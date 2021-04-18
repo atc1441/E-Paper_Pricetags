@@ -22,10 +22,10 @@ public:
       tx_data_main();
       break;
     case 50:
+      save_receive_buffer();
       set_is_data_waiting(0);
       cc1101_idle();
       tx_state = 52;
-      save_receive_buffer();
 
       if (get_trans_mode())
       {
