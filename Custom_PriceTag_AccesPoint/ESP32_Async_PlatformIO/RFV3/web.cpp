@@ -30,7 +30,14 @@
 #include "trans_assist.h"
 #include "settings.h"
 
-#include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
+#include <WiFiManager.h> // https://github.com/tzapu/WiFiManager/tree/feature_asyncwebserver
+
+#if defined(ESP32)
+#include <ESPmDNS.h> // Part of the ESP32 core
+#endif
+#ifdef ARDUINO_ARCH_ESP8266
+#include <ESP8266mDNS.h> // Part of the ESP8266 core
+#endif
 
 extern uint8_t data_to_send[];
 
@@ -145,6 +152,17 @@ void init_web()
   }
   Serial.print("Connected! IP address: ");
   Serial.println(WiFi.localIP());
+
+  // Make accessible via http://esl.local using mDNS responder
+  if (!MDNS.begin("ESL"))
+    {
+    Serial.println("Error setting up mDNS responder!");
+    while(1) {
+      delay(1000);
+    }
+  }
+  Serial.println("mDNS responder started");
+  MDNS.addService("http", "tcp", 80);
 
   server.addHandler(new SPIFFSEditor(SPIFFS, http_username, http_password));
 
