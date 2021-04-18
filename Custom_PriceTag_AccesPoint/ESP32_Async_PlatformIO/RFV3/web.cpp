@@ -153,7 +153,7 @@ void init_web()
   Serial.print("Connected! IP address: ");
   Serial.println(WiFi.localIP());
 
-  // Make accessible via http://esp32.local using mDNS responder
+  // Make accessible via http://esl.local using mDNS responder
   if (!MDNS.begin("ESL"))
     {
     Serial.println("Error setting up mDNS responder!");
