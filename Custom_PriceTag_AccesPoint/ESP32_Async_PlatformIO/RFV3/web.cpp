@@ -523,10 +523,15 @@ void init_web()
         set_is_data_waiting(0);
         set_mode_idle();
       }
-      else if (new_mode == "sync")
+      else if (new_mode == "wusync")
       {
         set_is_data_waiting(0);
         set_mode_wu();
+      }
+      else if (new_mode == "fullsync")
+      {
+        set_is_data_waiting(0);
+        set_mode_full_sync();
       }
       else
       {
