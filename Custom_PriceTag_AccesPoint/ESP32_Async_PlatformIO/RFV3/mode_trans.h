@@ -29,11 +29,11 @@ public:
 
       if (get_trans_mode())
       {
-        set_trans_mode(0);
+        set_trans_mode(0); // New activation mode finished
         set_last_activation_status(3);
-        restore_current_settings();
+        restore_current_settings(); // Go back to regular channel and network
         reset_full_sync_count();
-        set_mode_wu();
+        set_mode_full_sync(); // Full Sync after new activation
       }
       else
       {
