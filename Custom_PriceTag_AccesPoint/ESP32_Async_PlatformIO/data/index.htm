@@ -119,7 +119,8 @@ Enter text here. Each display type uses a font which fits about 18 characters pe
     <section>
         <h2>Maintenance</h2>
         <button onclick='get("heap")'>Get Heap</button>
-        <button onclick='send("set_mode?mode=sync")'>Do sync</button>
+        <button onclick='send("set_mode?mode=wusync")'>Wake + Full Sync</button>
+        <button onclick='send("set_mode?mode=fullsync")'>Full Sync</button>
         <button onclick='send("set_mode?mode=idle")'>Idle</button>
         <button onclick='send("delete_file")'>delete log files</button>
         <button onclick='send("reboot")'>Reboot ESP32</button>
