@@ -19,6 +19,7 @@
 #ifdef ARDUINO_ARCH_ESP8266
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
+#include <ESP8266mDNS.h>
 #include <Hash.h>
 #include <ESPAsyncTCP.h>
 #endif
@@ -31,13 +32,6 @@
 #include "settings.h"
 
 #include <WiFiManager.h> // https://github.com/tzapu/WiFiManager/tree/feature_asyncwebserver
-
-#if defined(ESP32)
-#include <ESPmDNS.h> // Part of the ESP32 core
-#endif
-#ifdef ARDUINO_ARCH_ESP8266
-#include <ESP8266mDNS.h> // Part of the ESP8266 core
-#endif
 
 extern uint8_t data_to_send[];
 
@@ -619,7 +613,7 @@ void init_web()
   server.onNotFound([](AsyncWebServerRequest *request) {
     if (request->url() == "/" || request->url() == "index.htm")
     { // not uploaded the index.htm till now so notify the user about it
-      request->send(200, "text/html", "please use <a href=\"/edit\">/edit</a> with login defined in wlan.h to uplaod the suplied index.htm to get full useage");
+      request->send(200, "text/html", "please use <a href=\"/edit\">/edit</a> with login defined in web.cpp to uplaod the supplied index.htm to get full useage");
       return;
     }
     Serial.printf("NOT_FOUND: ");
