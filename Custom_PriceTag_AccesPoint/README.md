@@ -7,6 +7,10 @@ A base station to wirelessly control a range of digital pricetags. Base station 
 * EPOP50C
 * EPOP900/EPOP900RB
 
+
+### You can support my work via PayPal: https://paypal.me/hoverboard1 this keeps projects like this coming.
+
+
 It should work on more displays from the Company ZBD / DisplayData but these are the ones which have been tested so far.
 
 ## Installation
