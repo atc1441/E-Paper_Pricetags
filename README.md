@@ -14,7 +14,7 @@
 ## 4.4" Version Imagotag G1 4.4 BWR
 
 ### Stock PCB external control
-- Use the ESP32 Demo code in the folder "Imagotag_G1_4.4_BWR/BWR_4.4_Arduino_ESP32"
+- Use the ESP32 Demo code in the folder "Imagotag_G1_4.4_BWR/BWR_4.4_Arduino_ESP32", The Adafruit GFX Library is needed for it to compile
 - To modify the stock pcb take a look at my video manual and the image in the folder "Imagotag_G1_4.4_BWR" : https://youtu.be/xxx
 
 ### Stock Firmware using custom AP
