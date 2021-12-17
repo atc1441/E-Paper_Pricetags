@@ -14,8 +14,8 @@
 ## 4.4" Version Imagotag G1 4.4 BWR
 
 ### Stock PCB external control
-- Use the ESP32 Demo code in the folder Imagotag_G1_4.4_BWR
-- To modify the stock pcb take a look at my video manual and the image in the folder: https://youtu.be/xxx
+- Use the ESP32 Demo code in the folder "Imagotag_G1_4.4_BWR/BWR_4.4_Arduino_ESP32"
+- To modify the stock pcb take a look at my video manual and the image in the folder "Imagotag_G1_4.4_BWR" : https://youtu.be/xxx
 
 ### Stock Firmware using custom AP
 - Manual and code coming later video with demo here: https://youtu.be/DhEPJjdtTQc
