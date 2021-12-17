@@ -11,6 +11,15 @@
 - This one is directly compatible with the GxEPD2 library.
 - To modify the stock pcb take a look at my video manual: https://youtu.be/c62D3Z-c5IM
 
+## 4.4" Version Imagotag G1 4.4 BWR
+
+### Stock PCB external control
+- Use the ESP32 Demo code in the folder Imagotag_G1_4.4_BWR
+- To modify the stock pcb take a look at my video manual and the image in the folder: https://youtu.be/xxx
+
+### Stock Firmware using custom AP
+- Manual and code coming later video with demo here: https://youtu.be/DhEPJjdtTQc
+
 ## 6" Version
 - This one should be compatible with the GxEPD2 library but is not tested, it is recomendet to Hack the stock PCB by adding a USB connector and a 5V bodge wire and reflash the MZ100 SOC to enable USB
 
@@ -27,7 +36,7 @@ can be flashed via the CC-Debugger or another compatible programmer.
 
 - *Update* full custom firmware, http://dmitry.gr/?r=05.Projects&proj=29.%20eInk%20Price%20Tags
 
-### Stock firmware 
+### Stock firmware using custom AP
 - To use the display with stock firmware and stock pcb you can use the ESP32 AccessPoint Emulator from the folder Custom_PriceTag_AccesPoint
 You need these two librarys: 
 https://github.com/me-no-dev/ESPAsyncWebServer
