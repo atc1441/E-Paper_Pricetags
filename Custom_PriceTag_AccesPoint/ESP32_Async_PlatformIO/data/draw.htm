@@ -61,7 +61,7 @@
         <button onclick="processAndSend()">send</button>
         display id: <input id="dispIdInput" value="123">
         <select onchange="selectDisplay()" id="displaySizeSelect">
-            <option value="296x128">Chroma29</option>
+            <option value="128x296">Chroma29</option>
             <option selected value="640x384">Chroma74</option>
         </select>
         <button onclick="process()">process without send (debug)</button>
@@ -196,13 +196,19 @@
                     }
                     const byteArray = new Uint8Array(byteNumbers);
                     fd.set("data", new Blob([byteArray], { type: "image/bmp" }), fileName);
-                    await window.fetch("/edit", {
+                    const resp = await window.fetch("/edit", {
                         method: "POST",
                         body: fd
                     })
+                    if (resp.status !== 200) {
+                        throw resp.statusText + await resp.text();
+                    }
                 }));
                 // send previously uploaded files
-                await fetch(`/set_bmp_file?id=${dispIdInput.value}&file=tmp-bw.bmp&file1=tmp-col.bmp`, { method: "POST" });
+                const resp = await fetch(`/set_bmp_file?id=${dispIdInput.value}&file=tmp-bw.bmp&file1=tmp-col.bmp&save_comp_file=1`, { method: "POST" });
+                if (resp.status !== 200) {
+                    throw resp.statusText + await resp.text();
+                }
                 alert("ok");
             } catch (err) {
                 alert(err);
