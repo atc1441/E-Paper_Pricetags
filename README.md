@@ -18,7 +18,7 @@
 - To modify the stock pcb take a look at my video manual and the image in the folder "Imagotag_G1_4.4_BWR" : https://youtu.be/sWKEWG-0ZLE
 
 ### Stock Firmware using custom AP
-- Manual and code coming later video with demo here: https://youtu.be/DhEPJjdtTQc
+- Manual and code coming later video with demo here: https://youtu.be/DhEPJjdtTQc and https://youtu.be/Zai0LVBbcdE
 
 ## 6" Version
 - This one should be compatible with the GxEPD2 library but is not tested, it is recomendet to Hack the stock PCB by adding a USB connector and a 5V bodge wire and reflash the MZ100 SOC to enable USB
