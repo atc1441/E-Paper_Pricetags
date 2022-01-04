@@ -426,7 +426,7 @@ void init_web()
     request->send(200, "text/plain", "Wrong parameter");
   });
 
-  server.on("/recover_display", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/recover_display", HTTP_POST, [](AsyncWebServerRequest *request) {
     String serial;
     uint8_t serial_array[7];
     if (request->hasParam("serial"))
