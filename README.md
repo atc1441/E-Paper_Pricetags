@@ -17,8 +17,10 @@
 - Use the ESP32 Demo code in the folder "Imagotag_G1_4.4_BWR/BWR_4.4_Arduino_ESP32", The Adafruit GFX Library is needed for it to compile
 - To modify the stock pcb take a look at my video manual and the image in the folder "Imagotag_G1_4.4_BWR" : https://youtu.be/sWKEWG-0ZLE
 
-### Stock Firmware using custom AP
-- Manual and code coming later video with demo here: https://youtu.be/DhEPJjdtTQc and https://youtu.be/Zai0LVBbcdE
+## 2.13" Version Hanshow BW TLSR Custom BLE Firmware
+- Use this Repository to flash a custom Firmware on the Hanshow Stellar ESL : https://github.com/atc1441/ATC_TLSR_Paper
+- A demo Video about it can be found here : https://youtu.be/VrGVWRPjHoA
+
 
 ## 6" Version
 - This one should be compatible with the GxEPD2 library but is not tested, it is recomendet to Hack the stock PCB by adding a USB connector and a 5V bodge wire and reflash the MZ100 SOC to enable USB
