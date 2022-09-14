@@ -3,6 +3,11 @@
 
 ### You can support my work via PayPal: https://paypal.me/hoverboard1 this keeps projects like this coming.
 
+## 1.54" 2.9" 4.2" HINKE0154A35, HINKE029A14 and HINKE042A11
+- The ones shown in this video: https://youtu.be/p28IE1oAKGQ
+- Either use this modified GxEPD Library: https://github.com/atc1441/GxEPD
+- or use the "EinkSD_1.54_2.9_4.2_Standalone_Library_HINK" Arduino code to drive them
+
 
 ## 11.6" Version
 - To use it with Arduino and GxEPD2 copy the modded library into your Arduino library folder and open the GxEPD2_Example and uncomment the GxEPD2_1160c display, its under ESP32 section, if you want to use it with a different Arduino you need to copy it or edit it for that one / pinout
