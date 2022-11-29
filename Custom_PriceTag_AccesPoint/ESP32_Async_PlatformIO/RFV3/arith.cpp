@@ -213,7 +213,7 @@ void calculate_entropy(File file, uint8_t *pBitmap, image_s *bin_image_input, _b
             if (bmp_infos->bTopDown)
                 file.seek(bmp_infos->offset + (bmp_infos->pitch * current_x), SeekSet);
             else
-                file.seek(bmp_infos->offset + (bin_image_input->height - 1 - current_x) * bmp_infos->pitch, SeekSet);
+                file.seek(bmp_infos->offset + (bin_image_input->width - 1 - current_x) * bmp_infos->pitch, SeekSet);
             file.read(&bin_image_input->current_line[1], (size_t)bin_image_input->height / 8);
         }
 
