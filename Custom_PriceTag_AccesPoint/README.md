@@ -30,7 +30,11 @@ Testing shows the "green" CC1101 868 MHz modules have out-of-spec oscillators. T
 
 The supported pictures must be monochrome .bmp, one image for each color in the case of multi-color diplays like the Chroma74. Images must have the same resolution and aspect ratio (landscape/portrait) for the target digital price tag or the display will not be updated even if the transmission is successful.
 
+* Chroma29: 128x296
+* Chroma42: 400x300
 * Chroma74: 640x384
+* EPOP50: 224x90
+* EPOP500: 320x240
 * EPOP900: 360x480
 
 ## Example Workflow
