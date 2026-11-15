@@ -1,8 +1,6 @@
 # E-Paper_Pricetags
 
 
-### You can support my work via PayPal: https://paypal.me/hoverboard1 this keeps projects like this coming.
-
 ## 1.54" 2.9" 4.2" HINKE0154A35, HINKE029A14 and HINKE042A11
 - The ones shown in this video: https://youtu.be/p28IE1oAKGQ
 - Either use this modified GxEPD Library: https://github.com/atc1441/GxEPD
